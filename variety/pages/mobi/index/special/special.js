@@ -37,23 +37,24 @@ export default class Specialmain extends React.Component {
 						
 						$.ajax({
 							type:'get',
-							url:'/stock/comb',
-							data:{stock_code:Scode},
+							url:'/stk/stk/list.do',
+							data:{codes:Scode},
 							dataType:'json',
 							async:false,
 							success:function(d){
 								
-								if(d.result[0].data.length>0){
-									var mydata = d.result[0].data;
+								if(d.data.length>0){
+									var mydata = d.data;
 									for(var i=0;i<mydata.length;i++){
 
-										jsonCode[mydata[i].stock_code] = mydata[i];
-										jsonCode[mydata[i].stock_code].rise_price > 0 ? jsonCode[mydata[i].stock_code].myClass = 'special_red' : jsonCode[mydata[i].stock_code].myClass = 'special_green';
+										jsonCode[mydata[i].instrumentId] = mydata[i];
+										jsonCode[mydata[i].instrumentId].upDropPrice >= 0 ? jsonCode[mydata[i].instrumentId].myClass = 'thigh' : jsonCode[mydata[i].instrumentId].myClass = 'tlow';
 
 									}
 									_this.setState({
 										dataHq : jsonCode
 									});
+									
 								}
 							}
 						});
@@ -74,7 +75,7 @@ export default class Specialmain extends React.Component {
 									for(var i=0;i<d.data.length;i++){
 
 										jsonCode[d.data[i].instrumentId] = d.data[i];
-										jsonCode[d.data[i].instrumentId].upDropPrice > 0 ? jsonCode[d.data[i].instrumentId].myClass = 'special_red' : jsonCode[d.data[i].instrumentId].myClass = 'special_green';
+										jsonCode[d.data[i].instrumentId].upDropPrice >= 0 ? jsonCode[d.data[i].instrumentId].myClass = 'thigh' : jsonCode[d.data[i].instrumentId].myClass = 'tlow';
 
 									}
 									_this.setState({
@@ -121,7 +122,7 @@ export default class Specialmain extends React.Component {
 		var data = this.state.data;
 		var jsonCode = this.state.dataHq || {};
 		
-		return <div>
+		return <div className="special_main clear">
 
 			<Header_title text="乐米-专题"/>
 			<div><Header text={data.subjectModel ? data.subjectModel.title : ''} /></div>
@@ -135,7 +136,12 @@ export default class Specialmain extends React.Component {
 				<span className="clear_span"></span>
 				
 			</div>
-			<ul className="special_content">
+			<ul className='top'>
+				<li className="name">名称</li>
+				<li>最新价格</li>
+				<li>涨跌幅</li>
+			</ul>
+			<div className="main_ovx">
 				
 				{
 					data.SubjectDetailModelList ? data.SubjectDetailModelList.map((e,i) => {
@@ -146,11 +152,16 @@ export default class Specialmain extends React.Component {
 						if(e.bigVarietyTypeCode=='stock'){//股票
 							myCode = e.varietyType;
 							
-							lastPrice = jsonCode[e.varietyType] ? jsonCode[e.varietyType].last_price : '--';
+							lastPrice = jsonCode[e.varietyType] ? jsonCode[e.varietyType].lastPrice.toFixed(e.marketPoint) : '--';
 
-							upDropSpeed = jsonCode[e.varietyType] ? ( (jsonCode[e.varietyType].rise_pre-0).toFixed(2)<0 ? (jsonCode[e.varietyType].rise_pre-0).toFixed(2) : '+'+(jsonCode[e.varietyType].rise_pre-0).toFixed(2) )+"%":'--';
+							upDropSpeed = jsonCode[e.varietyType] ? ( (jsonCode[e.varietyType].upDropSpeed*100).toFixed(2)<0 ? (jsonCode[e.varietyType].upDropSpeed*100).toFixed(2) : '+'+(jsonCode[e.varietyType].upDropSpeed*100).toFixed(2) )+"%":'--';
 
 							myClass = jsonCode[e.varietyType] ?jsonCode[e.varietyType].myClass : '';
+							
+							if(jsonCode[e.varietyType].status == 0){
+								myClass = 'istp_class';
+								upDropSpeed = '停牌'
+							}
 							
 							myNext = 1;
 							myNextId = e.varietyType;
@@ -159,9 +170,9 @@ export default class Specialmain extends React.Component {
 						else if( e.bigVarietyTypeCode=='future' ){//期货
 							myCode = e.contractsCode;
 							
-							lastPrice = jsonCode[e.contractsCode] ? jsonCode[e.contractsCode].lastPrice : '--';
+							lastPrice = jsonCode[e.contractsCode] ? jsonCode[e.contractsCode].lastPrice.toFixed(e.marketPoint) : '--';
 
-							upDropSpeed = jsonCode[e.contractsCode] ? ( (jsonCode[e.contractsCode].upDropSpeed*100).toFixed(2)<0 ? (jsonCode[e.contractsCode].upDropSpeed*100).toFixed(2) : '+'+(jsonCode[e.contractsCode].upDropSpeed*100).toFixed(2) )+"%":'--';
+							upDropSpeed = jsonCode[e.contractsCode] ? ( (jsonCode[e.contractsCode].upDropSpeed*100).toFixed(2)<0 ? (jsonCode[e.contractsCode].upDropSpeed*100).toFixed(2) :  '+'+(jsonCode[e.contractsCode].upDropSpeed*100).toFixed(2) )+"%":'--';
 
 							myClass = jsonCode[e.contractsCode] ?jsonCode[e.contractsCode].myClass : '';
 							
@@ -170,23 +181,13 @@ export default class Specialmain extends React.Component {
 							
 						}
 						return(
-							<li key={i}>
-
-								<a onClick={()=>{this.toNext(myNextId,myNext,gpId)}}>
-
-									<div className="special_cleft">
-										<div>{e.varietyName}</div>
-										<span>{myCode}</span>
-									</div>
-									<div className="special_cright">
-										<span className={ myClass +" special_bd"}>{lastPrice}</span>
-										<span className={ myClass +" special_bf"}>{upDropSpeed}</span>
-									</div>
-
-								</a>
-								<span className="bottom_line"></span>
-
-							</li>
+							
+							<div key={i} className='list' onClick={()=>{this.toNext(myNextId,myNext,gpId)}}>
+								<span className='pz_bt'>{e.varietyName}<em>{myCode}</em></span>
+								<span className={ myClass +' price'}>{lastPrice}</span>
+								<span className='percent'><b className={myClass}>{upDropSpeed}</b></span>
+						   </div>
+							
 						)
 
 					}) : ''
@@ -194,7 +195,7 @@ export default class Specialmain extends React.Component {
 				
 
 
-			</ul>
+			</div>
 
 		</div>
 		

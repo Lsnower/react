@@ -14,11 +14,42 @@ import Confirm from '../common/confirm.js';
 class WxPay extends React.Component{
     constructor(props) {
         super(props);
-        this.state={show:false,src:null};
+        this.state={
+            fun:null,
+            confirm:{
+                show:false,
+                content:'',
+                title:'',
+            },
+            src:null,
+            uerseid:null,
+            cannot:null
+        };
         this.ensure = this.ensure.bind(this);
         this.canvasToImg=this.canvasToImg.bind(this);
+        this.canNot=this.canNot.bind(this);
+        this.handback=this.handback.bind(this);
     }
     componentDidMount(){
+        let t = this;
+        $.ajax({
+            type:'post',
+            url:'/user/user/findUserInfo.do',
+            data:{},
+            dataType:'json',
+            success:function(d){
+                if(d.code==200){
+                    t.setState({
+                        uerseid:d.data.id
+                    });
+                }else{
+                    t.setState({
+                        isLogin:false
+                    });
+                }
+                
+            }
+        });
         this.canvasToImg();
     }
     ensure(){
@@ -26,38 +57,73 @@ class WxPay extends React.Component{
         var orderId = t.props.url.query.orderId;
 
         //判断当前订单有没有支付成功
-        $.ajax({
-            type:'post',
-            url:'/user/userpay/confirmPay.do',
-            data:{orderId:orderId},
-            dataType:'json',
-            success:function(d){
-                if(d.code==200){
-                    Router.push({
-                        pathname:'/mobi/lend/pay_success',
-                        query:{orderId:orderId}
-                    }) 
-                }else{
-                    t.setState({
-                        show:true,
-                        content:d.msg,
-                        code: d.code
-                    })
+        setTimeout(function(){
+            $.ajax({
+                type:'post',
+                url:'/user/userpay/confirmPay.do',
+                data:{orderId:orderId},
+                dataType:'json',
+                success:function(d){
+                    if(d.code==200){
+                        Router.push({
+                            pathname:'/mobi/lend/lend_detail',
+                            query:{id:orderId,userId:t.state.uerseid,type:'detail',lendType:'',yespay:'1'}
+                        }) 
+                    }else{
+                        t.setState({
+                            confirm:{
+                                show:true,
+                                content:d.msg,
+                                title:'',
+                            },
+                            fun:function(){
+                                t.setState({
+                                    confirm:{
+                                        show:false,
+                                        content:'',
+                                        title:'',
+                                    }
+                                })
+                            },
+                            cannot:t.canNot
+                        })
+                    }
+
                 }
-                
-            }
-        });    
+            });
+        },3000)
+    }
+    handback(){
+        var t = this;
+        var orderId = t.props.url.query.orderId;
+        setTimeout(function(){
+            $.ajax({
+                type:'post',
+                url:'/user/userpay/confirmPay.do',
+                data:{orderId:orderId},
+                dataType:'json',
+                success:function(d){
+                    if(d.code==200){
+                        //支付成功跳转到订单详情
+                        Router.push({
+                            pathname:'/mobi/lend/lend_detail',
+                            query:{id:orderId,userId:t.state.uerseid,type:'detail',lendType:'',yespay:'1'}
+                        }) 
+                    }else{
+                        //未支付成功
+                        window.history.back()
+                    }
+
+                }
+            });
+        },3000)
     }
     canNot(){
         var orderId = this.props.url.query.orderId;
-        this.setState({show:!this.state.show})
         Router.push({
             pathname:'/mobi/lend/pay',
             query:{id:orderId}
         }) 
-    }
-    canOk(){
-        this.setState({show:!this.state.show})
     }
     canvasToImg(){
         var image = new Image(),
@@ -72,7 +138,17 @@ class WxPay extends React.Component{
         return(
             <div>
                 <Header_title text="微信"/>
-                <Header text="微信"/>
+                <header id="head">
+                    <div className="head_content">
+                        <h3 className="productName">
+                            <span>微信</span>
+                            <em></em>
+                        </h3>
+                        <div className="left">
+                            <a className="demozuo" onClick={this.handback}></a>
+                        </div>
+                    </div>
+			     </header>
                 <section className="wrap">
                     <div className="logo">
                         <img className="img" src={this.state.src}/>
@@ -88,7 +164,7 @@ class WxPay extends React.Component{
                         <li className="go-back" onClick={()=>{this.ensure()}}>已完成支付</li>
                     </ul>
                 </section>
-                <Confirm type={2} confirm={this.state} isOk={()=>{this.canOk()}} isNot={()=>{this.canNot()}}/>
+                <Confirm type='2' confirm={this.state.confirm} isNot={this.state.cannot} isOk={this.state.fun}/>
                 <style jsx global>{`
                     html,body{
                        background: #fff; 

@@ -16,11 +16,13 @@ class Clicksex extends Component {
                 show:false,
                 content:''
             },
-            fun:null
+            fun:null,
+            nockick:null
         }
         this.sexclick= this.sexclick.bind(this);
         this.sexclose= this.sexclose.bind(this);
         this.sexyes= this.sexyes.bind(this);
+        this.isnot= this.isnot.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         this.setState({
@@ -40,6 +42,7 @@ class Clicksex extends Component {
     isnoLogin(){
         Router.push({pathname: '/login'});
     }
+    
     //选择性别
     sexclick(id){
         var that = this;
@@ -53,42 +56,66 @@ class Clicksex extends Component {
         var that = this;
         that.props.model()
     }
-    //点击确定
+    isnot(){
+        var that = this;
+        that.setState({
+            confirm:{
+                show:false,
+                content:'',
+            }
+        })
+    }
     sexyes(id){
         let that = this;
         this.props.inputsex(id);
-        
-        $.ajax({
-            url:'/user/user/updateUserSex.do',
-            data:{userSex:id},
-            success:function(d){
-                if(d.code == 200){
-                    that.props.model()
-                }else{
-                    if(d.code == 503){
-                        that.setState({
-                            confirm:{
-                                show:true,
-                                content:d.msg,
-                            },
-                            fun:that.isnoLogin
-                        })
+        if(id == '0'){
+            that.setState({
+                confirm:{
+                    show:true,
+                    content:'请选择性别',
+                    },
+                fun:that.isnot,
+                nockick:that.isnot
+            })
+        }else{
+            $.ajax({
+                url:'/user/user/updateUser.do',
+                data:{userSex:id},
+                type:'post',
+                success:function(d){
+                    if(d.code == 200){
+                        that.props.model()
                     }else{
-                        that.setState({
-                            confirm:{
-                                show:true,
-                                content:d.msg,
-                            }
-                        })
+                        if(d.code == 503){
+                            that.setState({
+                                confirm:{
+                                    show:true,
+                                    content:d.msg,
+                                },
+                                fun:that.isnoLogin,
+                                nockick:that.isnot
+                            })
+                        }else{
+                            that.setState({
+                                confirm:{
+                                    show:true,
+                                    content:d.msg,
+                                },
+                                fun:that.isnot,
+                                nockick:that.isnot
+                            })
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
+        
         
     }
     render() {
         let d = [{id:'1',name:'女',c:'1'},{id:'2',name:'男',c:'2'}],temp;
         let a;
+        
         let that = this;
         let c = that.state.off ? 'showsex':'showsex sexhide'
         if(d){
@@ -119,7 +146,7 @@ class Clicksex extends Component {
                         <ul className="show_main" ref="bodyBox2">
                             {temp}
                         </ul>
-                    <Alert type='2' confirm={this.state.confirm} isOk={this.state.fun}/>
+                    <Alert type='2' confirm={this.state.confirm} isNot={this.state.nockick} isOk={this.state.fun}/>
                 </div>
                 <style jsx global>{`
                     .showsex{

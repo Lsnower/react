@@ -15,7 +15,7 @@ export default ({text}) => (
 			}
 			.textNone_content div{
 				width: 1.5rem;
-				height: 1.23rem;
+				height: 1.5rem;
 				margin: 0 auto;
 			}
 			.textNone_content p{

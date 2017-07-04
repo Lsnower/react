@@ -11,6 +11,7 @@ class Userinfo extends React.Component{
         super(props);
         this.state={time:null,confirm:{show:false,content:''}};
         this.handler = this.handler.bind(this);
+		this.detail = this.detail.bind(this);
     }
     formattime(n){
             var time = new Date(n).getTime();
@@ -48,21 +49,53 @@ class Userinfo extends React.Component{
 
     }
     
-    handler(e,page){
-		if(this.props.isLogin){
-            Router.push({
-              pathname: '/mobi/user/circle_user/userInfo',
-              query: { id: e }
-            })
-        }else{
-            this.setState({
-                confirm:{
-                    show:true,
-                    content:'您未登录，请重新登录'
-                }
-            })
-        }
-        
+    handler(e){
+		var onoff = true;
+		
+		if(this.props.myfb=='true'){
+			onoff = false;
+		}
+		if(onoff){
+			e.stopPropagation();
+			if(this.props.isLogin){
+				Router.push({
+				  pathname: '/mobi/user/circle_user/userInfo',
+				  query: { id: this.props.user.userId }
+				})
+			}else{
+				this.setState({
+					confirm:{
+						show:true,
+						content:'您未登录，请重新登录'
+					}
+				})
+			}
+			event.stopPropagation(); 
+		}
+       
+    }
+	detail(){
+        var t = this,
+        viewpointId = t.props.user.dataId;
+		
+		if(!(this.props.myfb=='true')){
+			if(!(this.props.notab=='true') && t.props.isLogin){
+				if(!(this.props.query)){
+					Router.push({
+					  pathname: '/mobi/circle/components/service_detail',
+					  query: {viewpointId:viewpointId,type:'detail'}
+					})
+				}
+				else if(this.props.query=='detail'){
+					Router.push({
+					  pathname: '/mobi/circle/components/service_detail',
+					  query: {viewpointId:t.props.user.id,type:'detail'}
+					})
+				}
+			}
+		}
+		
+		
     }
 	isNotcick(){
 		this.setState({
@@ -76,12 +109,12 @@ class Userinfo extends React.Component{
 		
 		return(
             <div>
-                <div className="info">
-                   <img className="img left clearfix" src={this.props.user.userPortrait?this.props.user.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':"/static/circle/headportrait64x64@3x.png"} onClick={()=>{this.handler(this.props.user.userId,this.props.user.viewPage)}}/>
-                    <p>
+                <div className="info" onClick={this.detail}>
+                   <img className="img left clearfix" src={this.props.user.userPortrait?this.props.user.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':"/static/circle/headportrait64x64@3x.png"} onClick={this.handler}/>
+                    <p  onClick={this.handler}>
                         <span className="name">{this.props.user.userName}</span>
                         <em className="flag">{this.props.user.isAttention == 2?'已关注':''}</em>
-                        <em className="flag time">{this.formattime(this.props.user.createTime)}</em>
+                        
                     </p>
                     <Confirm type={1} confirm={this.state.confirm} isOk={ ()=>Router.push({pathname: '/login'}) } isNot={()=>this.isNotcick()} />
                 </div>
@@ -103,7 +136,7 @@ class Userinfo extends React.Component{
                     }
                     .name {
                         font-size: .16rem;
-                        color: #cd4a47;
+                        color: #222222;
                         margin-right: .05rem;
                     }
                     .flag {

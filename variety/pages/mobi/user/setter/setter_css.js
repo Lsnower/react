@@ -5,8 +5,8 @@ html{background:#e7e7e8;}
 .content_set li{
     width: 100%;
     background:#fff;
-    padding:0.15rem 0;
-    margin-bottom:0.1rem;
+    height:0.45rem;
+    line-height:0.45rem;
 }
 .content_set li a{
     width:90%;
@@ -14,17 +14,28 @@ html{background:#e7e7e8;}
     display: block;
     position:relative;
     height:100%;
-    color:#0c0f16;
-    font-size:0.14rem;
-    font-weight:600;
+    color:#222222;
+    font-size:0.15rem;
 }
-
+.content_set li:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 5%;
+    width: 100%;
+    height: 1px;
+    background: #e7e7e8;
+    transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -webkit-transform: scale(1);
+}
 .youjt2:after{content: " ";
     display: inline-block;
     -webkit-transform: rotate(45deg);
     transform: rotate(45deg);
-    height: 15px;
-    width: 15px;
+    height: 10px;
+    width: 10px;
     border-width: 1px 1px 0 0;
     border-color: #82848a;
     border-style: solid;
@@ -32,7 +43,7 @@ html{background:#e7e7e8;}
     top: -2px;
     position: absolute;
     right: 5px;
-    top: 3%;
+    top: 30%;
 }
 
 .screen_list li{
@@ -85,6 +96,15 @@ html{background:#e7e7e8;}
 .follow_list li a{
     background: url('../../../static/mine/follow_icon_relieve@3x.png') no-repeat center 0.05rem;
 }
+	.list_li{
+		display: flex;
+	}
+	.list_li a{
+		flex: 1;
+	}
+	.list_li .list_li_l{
+		flex: 3;
+	}
 /*新消息提醒开始*/
 
     

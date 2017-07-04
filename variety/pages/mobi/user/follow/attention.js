@@ -169,10 +169,12 @@ class Acclist extends Component {
                             c = v.status == '0' ? '' : 'isshow';
                             attenimg = v.followUserPortrait ? v.followUserPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200' : "../../../static/mine/headportrait160x160@3x.png";
                             return (
-                                <li key={r} className="clear">
-                                    <img src={attenimg} onClick={()=>{that.clickimg(v.followUserId)}}/>
-                                    <div className="listcon">{v.followuserName}
-                                        <p className={c}>已互相关注</p>
+                                <li key={r} className="clear list_li">
+                                    <div className="list_li_l" onClick={()=>{that.clickimg(v.followUserId)}}>
+										<img src={attenimg}/>
+										<div className="listcon">{v.followuserName}
+											<p className={c}>已互相关注</p>
+										</div>
                                     </div>
                                     <a href="javascript:;;" onClick={()=>{that.handler(v.followUserId,v.followuserName)}}>解除</a>
                                     <style jsx global>{`

@@ -24,8 +24,8 @@ export default () => ( < style >{ `
 	body{
 		font-size:14px;
 		font-family: Microsoft YaHei,Arial,Verdana,Sans-serif;
-		color: #2b2b2b;
-		background : #e7e7e8;
+		color: #bfbfbf;
+		background : #f5f5f5;
 	}
 	.bottom_line {
 		display: block;
@@ -39,7 +39,7 @@ export default () => ( < style >{ `
 	}
 	input{
 		padding: 0;
-		color: #3c3a39;
+		color: #222222;
 		font-size: 14px;
 		-moz-appearance: none;
 		-webkit-appearance: none;
@@ -48,6 +48,21 @@ export default () => ( < style >{ `
 		-webkit-tap-highlight-color:rgba(0,0,0,0);
 		tap-highlight-color:rgba(0,0,0,0);
 	}
+	input-placeholder{
+		color:#bfbfbf;
+	}
+	::-webkit-input-placeholder { 
+　　	color:#bfbfbf;
+　　}
+　　:-moz-placeholder {
+　　	color:#bfbfbf;
+　　}
+　　::-moz-placeholder { 
+　　	color:#bfbfbf;
+　　}
+　　:-ms-input-placeholder {
+　　	color:#bfbfbf;
+　　}
 	input[disabled=disabled]{
 		background: #fff;
 	}
@@ -78,6 +93,7 @@ export default () => ( < style >{ `
 		width: 100%;
 		background: #FFF;
 		position: relative;
+		margin-top:.15rem;
 	}
 	.userName img{
 		width: 0.15rem;
@@ -96,14 +112,14 @@ export default () => ( < style >{ `
 		width: 100%;
 		height: 0.5rem;
 		border-bottom: 1px solid #efefef;
-		text-indent: 0.22rem;
+		text-indent: 0.12rem;
 		padding: 0;
-		margin: 0;
+		margin: 0 0.1rem;
 	}
 	.userImg{
 		width: 92%;
 		margin: 0 auto;
-		margin-top: 0.15rem;
+		margin-top: 0.1rem;
 	}
 	.userImg .up_img{
 		width: 48%;
@@ -156,14 +172,14 @@ export default () => ( < style >{ `
 	
 	.btn_submit{
 		width: 90%;
-		height: 0.4rem;
-		line-height: 0.4rem;
+		height: 0.44rem;
+		line-height: 0.44rem;
 		font-size: 0.14rem;
-		background: #82848a;
+		background: #999999;
 		color: #FFF;
 		text-align: center;
 		margin: 0.5rem auto;
-		border-radius: 4px;
+		border-radius: .04rem;
 	}
 	.sure_submit{
 		background: #cd4a47;

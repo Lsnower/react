@@ -14,6 +14,11 @@ export default () => ( < style jsx global > {
           margin: 0;
           padding: 0;
           font: 14px Microsoft YaHei,Arial,Verdana,Sans-serif;
+		  background: #f5f5f5;
+		  -webkit-overflow-scrolling: touch;
+        }
+        .realInput:focus{
+            color:#fff
         }
         html {
             font-size: 625%;
@@ -28,6 +33,7 @@ export default () => ( < style jsx global > {
             text-size-adjust: 100%;
             -webkit-tap-highlight-color: transparent;
             background-color: transparent;
+            font-family:PingFangSC-Regular;
         }
         :focus,a:active,a:hover {
             outline: 0
@@ -189,10 +195,11 @@ export default () => ( < style jsx global > {
         #head{
             width: 100%;
             text-align: center;
-            background: #160509;
-            color: #FFF;
+            background: #fff;
+            color: #222;
             position: relative;
             z-index: 1;
+            border-bottom:1px solid #ddd;
         }
         #head h3{
             height:.5rem;
@@ -204,7 +211,7 @@ export default () => ( < style jsx global > {
         }
         #head h3 span:nth-of-type(1){
             display: block;
-            font-size: 0.16rem;
+            font-size: .17rem;
         }
         #head h3 span:nth-of-type(2){
             display: block;
@@ -222,8 +229,15 @@ export default () => ( < style jsx global > {
         }
         #head .head_content .left a,#head .head_content .right a{
             color: #fff;
+        }
+		#head .head_content .right a{
+            color: #000;
             line-height: 0.5rem;
         }
+		#head .head_content .right img{
+			width: 0.25rem;
+			margin-top: 0.22rem;
+		}
         #head .head_content .left a{
             font-size: 0.2rem;
         }
@@ -245,10 +259,44 @@ export default () => ( < style jsx global > {
             display: inline-block;
             -webkit-transform: rotate(225deg);
             transform: rotate(225deg);
-            height: 15px;
-            width: 15px;
-            border-width: 2px 2px 0 0;
-            border-color: #d9d9da;
+            height: 12px;
+            width: 13px;
+            border-width: 1px 1px 0 0;
+            border-color: #222;
+            border-style: solid;
+            position: relative;
+            top: -2px;
+            position: absolute;
+            left: 0px;
+            top: 18px;
+        }
+        .whrite:after{
+            content: " ";
+            display: inline-block;
+            -webkit-transform: rotate(225deg);
+            transform: rotate(225deg);
+            height: 12px;
+            width: 13px;
+            border-width: 1px 1px 0 0;
+            border-color: #ffffff;
+            border-style: solid;
+            position: relative;
+            top: -2px;
+            position: absolute;
+            left: 0px;
+            top: 18px;
+        }
+        #head .backIcon:after{
+            content: " ";
+            display: inline-block;
+            -webkit-transform: rotate(225deg);
+            -webkit-transform: rotate(225deg);
+            -ms-transform: rotate(225deg);
+            transform: rotate(225deg);
+            height: 12px;
+            width: 13px;
+            border-width: 1px 1px 0 0;
+            border-color: #fff;
             border-style: solid;
             position: relative;
             top: -2px;
@@ -281,6 +329,7 @@ export default () => ( < style jsx global > {
             text-align:center;
             flex:1;
             -webkit-flex:1;
+			position: relative;
         }
         #foot .content li a{
             width:100%;
@@ -300,7 +349,26 @@ export default () => ( < style jsx global > {
         #foot .content li .show{
             color:#252021;
         }
-
+		#foot .content li .foot_red{
+			min-width: 0.14rem;
+			height: 0.14rem;
+			background: #e7423e;
+			position: absolute;
+			top: 0;
+			left: 59%;
+			color: #FFF;
+			font-size: 0.1rem;
+			line-height: 0.15rem;
+			text-align: center;
+			border-radius: 0.08rem;
+			padding: 0 0.05rem;
+		}
+		.foot_red_show{
+			display: block;
+		}
+		.foot_red_hide{
+			display: none;
+		}
         .text-orange{
             color:#fc603c;
         }
@@ -382,7 +450,7 @@ export default () => ( < style jsx global > {
             text-align:center;
         }
         .action .btn-right{
-            border-radius: 0 .04rem .04rem/.04rem 0 ;
+            border-radius:.04rem;
         }
         .action .ok{
             background: #cd4a47;

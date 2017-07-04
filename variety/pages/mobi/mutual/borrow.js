@@ -4,35 +4,37 @@ import Head from '../common/header/header_left.js'
 import Router from 'next/router'
 import Link from 'next/link'
 import Text_none from '../common/text_none.js'
-
+import Lend from '../lend/lend.js'
+import MyLend from '../lend/myLend.js'
 class Borrow extends React.Component{
 	constructor(props){
         super(props)
     }
+    componentDidMount(){
+        let that = this;
+        var longmsg={
+            money:null,
+            interest:null,
+            days:null,
+            content:null
+        }
+        localStorage.setItem('landmsg',JSON.stringify(longmsg));
+        localStorage.setItem('sdborrowlands','');
+    }
     render(){
         return(
-            <div className={'huzhu'}>
-            	<div className='myborrow'>
-	            	<Link href={'/mobi/lend/myLend'}>
-		            	<a>	                    
-		                    <div>我的借入<span className="youjt2"></span></div>
-		                </a>
-	                </Link>
-                </div>
-                <div className='myborrow'>
-	            	<Link href={'/mobi/lend/lendout'}>
-		            	<a>	                    
-		                    <div>我的借出<span className="youjt2"></span></div>
-		                </a>
-	                </Link>
-                </div>
-                <div className='toborrow'>
-	            	<Link href={'/mobi/mutual/toborrow'}>
-		            	<a>	                    
-		                    <div>我要借款</div>
-		                </a>
-	                </Link>
-                </div>
+            <div>
+            	<ul className="borrow_list" ref="borrow_list">
+                    <li className="active"><a href="javascript:;;">借款有道</a></li>
+                    <li>
+                        <Link href="/mobi/mutual/borrowmy">
+                            <a href="javascript:;;">我的借款</a>
+                        </Link>
+                    </li>
+                </ul>
+                <section>
+                <Lend/>
+                </section>
             </div>
         )
     }
@@ -40,71 +42,78 @@ class Borrow extends React.Component{
 export default  class  Future extends React.Component {
 	constructor(props){
         super(props)
+        this.announce = this.announce.bind(this);
+    }
+    announce(){
+        Router.push({
+            pathname:'/mobi/mutual/toborrow',
+            query:{
+                lendslink:'1'
+            }
+        })
     }
 	render(){
 		return <div>
 			
-			<Header_title text='乐米互助'/>
-            <Head text="互助" />
+			<Header_title text='互助借款'/>
+            <Head path="/" text="互助借款" />
 			<Borrow/>
+            <div className="myannounce" onClick={()=>{this.announce()}}>我要发布</div>
 			<style>{`
 				body{
-					background: #efefef;
-					
+					background: #efefef;	
 				}
-                .myborrow,.mylender{
-                	width:100%;
-                	height:.5rem;
-                	line-height:.5rem;
-                	background-color:#fff;
-                	border-top:.01rem solid #f0efef;
-                	text-indent:.2rem;
-                	font-size:.16rem;
-                	position:relative;
+                ul.borrow_list{
+                    background:#ffffff;
+                    box-shadow:0 0 0 0 #dddddd;
+                    width:100%;
+                    height:0.44rem;
                 }
-                .myborrow span,.myLend span{
-                	height: .53rem;
-				    line-height: .53rem;
-				    display: block;
-				    font-size: 0.15rem;
-				    color: #e43022;
-				    position: absolute;
-				    right: 2%;
-				    top: 0;
-				    text-align: right;
-				    z-index:2;
+                .borrow_list li{
+                    width:50%;
+                    float: left;
+                    height:100%;
+                    line-height:0.44rem;
+                    text-align: center;
+                    color:#666666;
+                    font-size: 0.15rem;
                 }
-                .youjt2:after{
-                	    content: " ";
-					    display: inline-block;
-					    -webkit-transform: rotate(45deg);
-					    transform: rotate(45deg);
-					    height: 15px;
-					    width: 15px;
-					    border-width: 1px 1px 0 0;
-					    border-color: #95979c;
-					    border-style: solid;
-					    position: relative;
-					    top: -2px;
-					    position: absolute;
-					    right: 15px;
-					    top: 35%;
+                .borrow_list li a{
+                    display: inline-block;
+                    height:100%;
+                    width:100%;
+                    position:relative;
                 }
-                .myLend .youjt2:after{
-                	position: absolute;
-					    right: 25px;
-					    top: 35%;
+                li.active{
+                    color:#222222;
                 }
-                div .toborrow{
-                	width:90%;
-                	margin:.5rem 5% 0 5%;
-                	line-height:.5rem;
-                	background-color:#cd4a47;
-                	border-top:.01rem solid #f0efef;
-                	text-align:center;
-                	font-size:.16rem;
-                	color:#fff;
-                	border-radius:.05rem;
+                li.active a:after {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    left: 50%;
+                    width: 0.48rem;
+                    height: 2px;
+					margin-left: -0.24rem;
+                    background: #222222;
+                    -webkit-transform: scale(1);
+                    -ms-transform: scale(1);
+                    transform: scale(1);
+                    -moz-transform: scale(1);
+                    -o-transform: scale(1);
+                    -webkit-transform: scale(1);
+                    bottom:0;
+                }
+                .myannounce{
+                    position: fixed;
+                    bottom:0;
+                    width:100%;
+                    height:0.49rem;
+                    background:#cd4a47;
+                    line-height:0.49rem;
+                    text-align: center;
+                    color:#fff;
+                    font-size:0.15rem;
                 }
             `}</style>
 		</div>

@@ -69,9 +69,9 @@ class Userinfo extends React.Component{
                 t.setState({
                     follow:d.data.follow?1:0,
                     shield:d.data.shield?1:0,
-                    followItem: d.data.follow?'已关注':'关注',
+                    followItem: d.data.follow?'已关注':'+关注',
                     shieldItem: d.data.shield?'已屏蔽':'屏蔽TA',
-                    followColor: d.data.follow?'colorG':'colorR'
+                    followColor: d.data.follow?'colorR':'colorR'
                 });
             }
           }
@@ -121,7 +121,7 @@ class Userinfo extends React.Component{
                         follow:that.state.follow?0:1,
                         followItem:'已关注',
                         follower:that.state.follower+1,
-                        followColor:that.state.follow?'colorR':'colorG',
+                        followColor:that.state.follow?'colorR':'colorR',
                         show:false
                     })
                 }else{
@@ -138,7 +138,7 @@ class Userinfo extends React.Component{
     canOk(f){
         var that = this;
         var text = {
-                'followItem':{0:'已关注',1:'关注'},
+                'followItem':{0:'已关注',1:'+关注'},
                 'shieldItem':{0:'已屏蔽',1:'屏蔽TA'}
         }
         var id = f.type == 'follow' ?'followId':'shieldId',
@@ -158,7 +158,7 @@ class Userinfo extends React.Component{
                                 follow:d.status?0:1,
                                 followItem:text['followItem'][that.state.follow],
                                 follower:d.status?that.state.follower-1:that.state.follower+1,
-                                followColor:d.status?'colorR':'colorG'
+                                followColor:d.status?'colorR':'colorR'
                             });
                     }else{
                         that.setState({
@@ -205,22 +205,30 @@ class Userinfo extends React.Component{
                             <img className="user-img" src={this.state.userPortrait?this.state.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':"/static/circle/headportrait160x160@3x.png"} onClick={()=>{this.bigger()}}/>
                         </div>
                         <div className="user-right">
-                            <p className="user-name"><img src={this.state.userSex?(this.state.userSex==1?"/static/circle/user_girl@3x.png":"/static/circle/user_boy@3x.png"):'/static/circle/user_boy@3x.png'}/>{this.state.userName}</p>
-                            <p className="user-land">{this.state.land?this.state.land:'暂无位置信息'}</p>
-                            <p className="user-fine">
-                                <span >关注<em >{this.state.attention}</em></span>
-                                <em className="action-flag">/</em>
-                                <span>粉丝<em >{this.state.follower}</em></span>
+                            <p className="user-name">{this.state.userName}<img src={this.state.userSex?(this.state.userSex==1?"/static/circle/user_girl@3x.png":"/static/circle/user_boy@3x.png"):'/static/circle/user_boy@3x.png'}/></p>
+                            <p className="user-land">
+                            	<span className="user-name-span">{this.state.land?this.state.land:'暂无位置信息'}</span>
+                            	<img src={this.state.certificationStatus?'/static/mine/userinformation_certified@2x.png':'/static/mine/userinformation_unauthorized@2x.png'} />
                             </p>
                         </div>
-                    </div>
+					</div>
+					
+					<div className="user-fine">
+						<div>
+							<span className="fine_span1">{this.state.attention}</span>
+							<span>关注</span>
+						</div>
+						<div>
+							<span className="fine_span1">{this.state.follower}</span>
+							<span>粉丝</span>
+						</div>
+						<span className="line_top"></span>
+						<span className="line_left"></span>
+					</div>
+			
                 </section>
                 <ul className="list">
                     <li className="issure" onClick={()=>{this.issuer()}}>{this.state.self?'我的发表':'TA的发表'}</li>
-                    <li className="auth">实名认证
-                        <img src={this.state.certificationStatus?"/static/mine/news_icon_succeed@3x.png":"/static/mine/userinformation_list_norealname@2x.png"} className="sm_img"/>
-                        <span className={this.state.certificationStatus?"auth-flag yes":"auth-flag"}>{this.state.certificationStatus?"已认证":"未认证"}</span>
-                    </li>
                 </ul>
                 <footer style={{display:this.state.self?'none':'block'}}>
                     <ul className="footer">
@@ -232,14 +240,14 @@ class Userinfo extends React.Component{
                 <Bigger show={this.state.bigger} hand={this.bigger} pic={this.state.userPortrait?this.state.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':"/static/circle/headportrait160x160@3x.png"}/>
                 <style jsx global>{`
                     html,body{
-                        background: #e7e7e7;
+                        background: #f5f5f5;
                     }
                 `}</style>
                 <style jsx >{`
                     .wrap{
-                        background:url('/static/circle/mine_head_bg@3x.png') no-repeat left top;
+                        background: #FFF;
                         background-size: cover;
-                        padding: .12rem 0;
+                        padding-top: .12rem;
                     }
                     #header{
                         width: 100%;
@@ -268,58 +276,95 @@ class Userinfo extends React.Component{
                         padding: .12rem;
                     }
                     .user-left,.user-right{
-                        height: .8rem;
+                        height: .75rem;
                     }
                     .user-left{
-                        flex: 1;
-                        -webkit-flex: 1;
-                        margin-right: .12rem;
+                        flex: 1.2;
+                        -webkit-flex: 1.2;
+                        margin-right: .15rem;
                     }
                     .user-right{
-                        flex: 3;
+                        flex: 3.5;
                         color:#fff;
                     }
                     .user-name{
                         position: relative;
-                        font-size: .18rem;
+                        font-size: .17rem;
                         font-weight: 500;
                         letter-spacing: .01rem;
                         background-size: 8%;
-                        padding-left: .22rem;
+						color: #222;
                     }
                     .user-land{
                         color: #82848A;
                         font-size: .12rem;
                         margin-top: .06rem;
                     }
+					.user-land img{
+						width: 0.57rem;
+						display: block;
+						margin-top: 0.05rem;
+                    }
                     .user-name img{
 						width: 0.18rem;
                         position: absolute;
                         top: .04rem;
-                        left: -.03rem;
                         display: inline-block;
+						margin-left: 0.05rem;
+						
                     }
                     .user-img{
                         display:inline-block;
-                        width: .8rem;
-                        height: .8rem;
+                        width: .75rem;
+                        height: .75rem;
                         border-radius: 50%;
                         background: #fff;
                     }
                     .user-fine{
-                        font-size: .12rem;
+						display: flex;
                         margin-top:.12rem;
+						text-align: center;
+						height: 0.5rem;
+						position: relative;
                     }
-                    .user-fine em{
-                        margin: 0 .06rem;
-                    }
+					.user-fine div{
+						flex: 1;
+					}
+                    .user-fine span{
+                        display: block;
+						color: #999;
+					}
+					.user-fine .fine_span1{
+						color: #222;
+						margin-top: 0.05rem;
+					}
+					.user-fine .line_top{
+						width: 90%;
+						height: 1px;
+						background: #ddd;
+						margin: 0;
+						position: absolute;
+						left: 5%;
+						top: -0.05rem;
+					}
+					.user-fine .line_left{
+						width: 1px;
+						height: 0.36rem;
+						background: #ddd;
+						position: absolute;
+						left: 50%;
+						top: 0.06rem;
+					}
                     .action-flag{
                         margin-left: 0;
                     }
+					.list{
+						margin-top: 0.15rem;
+					}
                     .list li{
                         position:relative;
-                        height:.7rem;
-                        line-height: .7rem;
+                        height:.5rem;
+                        line-height: .5rem;
                         font-size: .14rem;
                         margin-bottom: .1rem;
                         padding-left: .46rem;
@@ -329,17 +374,17 @@ class Userinfo extends React.Component{
                         display: inline-block;
                         -webkit-transform: rotate(225deg);
                         transform: rotate(225deg);
-                        height: 15px;
-                        width: 15px;
-                        border-width: 0 0 2px 2px;
+                        height: 12px;
+                        width: 12px;
+                        border-width: 0 0 1px 1px;
                         border-color: #d9d9da;
                         border-style: solid;
                         position: absolute;
-                        top: .28rem;
+                        top: .17rem;
                         right: .2rem;
                     }
                     li.issure{
-                        background: url(/static/circle/mine_list_icon_opinion@3x.png) no-repeat .1rem .24rem #fff;
+                        background: url(/static/circle/mine_list_icon_opinion@3x.png) no-repeat .1rem .15rem #fff;
                         background-size: 6%;
                     }
                     li.auth{
@@ -388,7 +433,13 @@ class Userinfo extends React.Component{
                     .unfollow{
                         color: #cf4945;
                     }
-
+					.user-name-span{
+						max-width: 2rem;
+						display: block;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+						overflow: hidden;
+					}
                 `}</style>
             </div>
         )

@@ -3,6 +3,7 @@ import Header_title from '../common/header/header_title.js'
 import Head from '../common/header/header_left.js'
 import Router from 'next/router'
 import Text_none from '../common/text_none.js'
+
 class TabController extends React.Component {
     constructor(props){
         super(props);
@@ -74,8 +75,8 @@ class Flist extends React.Component {
                         return(
                             <div key={i} className='list' onClick={()=>{this.hanleLink(e.varietyId)}}>
                                 <span>{e.varietyName}<em>{e.contractsCode}</em></span>
-                                 <span className={o[e.contractsCode]&&parseFloat(o[e.contractsCode].upDropPrice)<0?'price tlow':'price thigh'}>{o[e.contractsCode]?o[e.contractsCode].lastPrice.toFixed(e.marketPoint):''}</span>
-                                <span className={o[e.contractsCode]&&parseFloat(o[e.contractsCode].upDropPrice)<0?'percent tlow':'percent thigh'}>{o[e.contractsCode]?(parseFloat(o[e.contractsCode].upDropPrice)<0?'':'+')+o[e.contractsCode].upDropSpeed:''}</span>
+                                 <span className={o[e.contractsCode]?parseFloat(o[e.contractsCode].upDropPrice)<0?'price tlow':'price thigh':''}>{o[e.contractsCode]?o[e.contractsCode].lastPrice.toFixed(e.marketPoint):'--'}</span>
+                                <span><b className={o[e.contractsCode]?parseFloat(o[e.contractsCode].upDropPrice)<0?'percent tlow':'percent thigh':''}>{o[e.contractsCode]?(parseFloat(o[e.contractsCode].upDropPrice)<0?'':'+')+o[e.contractsCode].upDropSpeed:'--'}</b></span>
                            </div>
                         )
                    
@@ -111,8 +112,8 @@ class Slist extends React.Component {
                         return(
                             <div key={i} className='list' data-id={e.varietyId} onClick={()=>{this.hanleLink(e.varietyId)}}>
                                 <span>{e.varietyName}<em>{e.contractsCode}</em></span>
-                                <span className={o[e.contractsCode]&&parseFloat(o[e.contractsCode].upDropPrice)<0?'price tlow':'price thigh'}>{o[e.contractsCode]?o[e.contractsCode].lastPrice.toFixed(e.marketPoint):''}</span>
-                                <span className={o[e.contractsCode]&&parseFloat(o[e.contractsCode].upDropPrice)<0?'percent tlow':'percent thigh'}>{o[e.contractsCode]?(parseFloat(o[e.contractsCode].upDropPrice)<0?'':'+')+o[e.contractsCode].upDropSpeed:''}</span>
+                                <span className={o[e.contractsCode]?parseFloat(o[e.contractsCode].upDropPrice)<0?'price tlow':'price thigh':''}>{o[e.contractsCode]?o[e.contractsCode].lastPrice.toFixed(e.marketPoint):'--'}</span>
+                                <span><b className={o[e.contractsCode]?parseFloat(o[e.contractsCode].upDropPrice)<0?'percent tlow':'percent thigh':''}>{o[e.contractsCode]?(parseFloat(o[e.contractsCode].upDropPrice)<0?'':'+')+o[e.contractsCode].upDropSpeed:'--'}</b></span>
                            </div>
                         )
                    
@@ -199,14 +200,15 @@ export default  class  Future extends React.Component {
                 <Flist data={this.state.guoji} quota={this.state.quota}/>
                 <Slist data={this.state.guonei} quota ={this.state.quota}/>
            </TabController>
+
             <style>{`
                 .futures_main{
                     background:#e7e7e8;
                 }
-                 nav{
+                nav{
                     width:100%;
                     display:flex;
-                    display:-weblit-flex;
+                    display:-webkit-flex;
                     background:#fff;
                 }
                 nav div{
@@ -215,22 +217,22 @@ export default  class  Future extends React.Component {
                     text-align:center;
                 }
                 nav  span{
-                    line-height:.5rem;
-                    color:#0c0f16;
-                    font-size:.16rem;
+                    line-height:.44rem;
+                    color:#666;
+                    font-size:.15rem;
                     display:block;
                     position:relative;
                 }
                  nav span.on{
-                    color:#869bcb;
+                    color:#222;
                 }
                  nav span.on:after{
                     content:'';
-                    border-bottom:.02rem solid #869bcb;
+                    border-bottom:.02rem solid #222;
                     width:.5rem;
                     position:absolute;
                     left:50%;
-                    top:.48rem;
+                    top:.42rem;
                     margin-left:-.25rem;
                 }
                 div.con{
@@ -242,17 +244,26 @@ export default  class  Future extends React.Component {
                 ul.top{
                     width:100%;
                     display:flex;
-                    margin-top:.1rem;
-                    background:#fff;
+                    display:-webkit-flex;
+                    background:#f5f5f5;
                     border-bottom:.01rem solid #f0efef;
+                    padding-right:.1rem;
                 }
                 ul.top li{
                     flex:1;
+                    -webkit-flex:1;
                     text-align:left;
                     padding-left:.12rem;
-                    font-size:.14rem;
-                    color:#82848a;
-                    line-height:.36rem;
+                    font-size:.1rem;
+                    color:#999;
+                    line-height:.32rem;
+                }
+                ul.top li:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                }
+                 ul.top li:last-child{
+                    text-align:right;
                 }
                  div.main{
                     background:#fff;
@@ -261,32 +272,56 @@ export default  class  Future extends React.Component {
                     width:100%;
                     display:flex;
                     display:-webkit-flex; 
-                    padding:.1rem 0; 
-                    border-bottom:.01rem solid #f0efef;                  
+                    padding:.12rem 0; 
+                    border-bottom:.01rem solid #f0efef; 
+                    padding-right:.1rem;                 
                 }
                 div.list span{
                     flex:1;
                     -webkit-flex:1;
                     display:block;
                     padding-left:.12rem;
-                    font-size:.16rem;
+                    
+                }
+                 div.list span:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                    color:#222;
+                    font-size:.15rem;
                 }
                 div.list span em{
                     display:block;
-                    font-size:.12rem;
+                    font-size:.1rem;
                     font-style:normal;
-                    color:#82848a;
+                    color:#999;
                 }
                 span.price,span.percent{
                     line-height:.32rem;
                     color:#838489;
-                    font-size:.16rem;
+                    font-size:.17rem;
                 }
                 span.thigh{
                     color:#cd4a47;
                 }
                span.tlow{
-                    color:#33d37e;
+                    color:#2ecc9f;
+               }
+               div.list span b{
+                    width:.7rem;
+                    height:.27rem;
+                    display:block;
+                    color:#fff;
+                    text-align:center;
+                    line-height:.27rem;
+                    font-size:.15rem;
+                    float: right;
+                    font-weight: normal;
+               }
+               div.list span b.thigh{
+                background:#cd4a47;
+               }
+                div.list span b.tlow{
+                background:#2ecc9f;
                }
             `}</style>
           </div>

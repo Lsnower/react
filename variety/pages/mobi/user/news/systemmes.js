@@ -18,19 +18,34 @@ class Circle extends Component {
             viewData:[],
             viewPage:0,
             viewMore:true,
-            bigHeight:500,
+            bigHeight:600,
             _sysdata:null,
             confirm:{
                 show:false,
                 content:''
             },
-            fun:null
+            fun:null,
+            moneymsg:null
         }
         this.nolink = this.nolink.bind(this);
         this.showlistmsg = this.showlistmsg.bind(this);
     }
     componentDidMount() {
-        
+        var t = this;
+        $.ajax({
+            type:'post',
+            url:'/user/userAccount/userAccountInfo.do',
+            data:{},
+            dataType:'json',
+            success:function(d){
+                if(d.code==200){
+                    t.setState({
+                        moneymsg:d.data.money,
+                        login:true
+                    })
+                }
+            }
+        });
         this.showlistmsg();
     }
     isnoLogin(){
@@ -38,39 +53,22 @@ class Circle extends Component {
     }
     showlistmsg(){
         let t = this;
+        let lasttime = t.state.viewData[t.state.viewData.length-1]?t.state.viewData[t.state.viewData.length-1].createTime:'';
         let H = $('.circle_list').height() ? $('.circle_list').height() : ($(window).height()-50) ;
         t.serverRequest=$.ajax({
             type:'post',
             url:'/msg/msg/history.do',
-            data:{autoRead:false,page:t.state.viewPage,size:15,classify:1},
+            data:{autoRead:false,createTime:lasttime,size:15,classify:1},
             dataType:'JSON',
             success:function(e){
                 if(e.code==200){
                     t.setState({
                         viewData:t.state.viewData.concat(e.data),
                         viewPage:t.state.viewPage+1,
-                        viewMore:e.resultCount>(t.state.viewPage+1)*15?true:false,
+                        viewMore:e.data.length>14?true:false,
                         bigHeight:H
                     })
                 }
-//                else{
-//                    if(e.code == 503){
-//                        t.setState({
-//                            confirm:{
-//                                show:true,
-//                                content:d.msg,
-//                            },
-//                            fun:t.isnoLogin
-//                        })
-//                    }else{
-//                        t.setState({
-//                            confirm:{
-//                                show:true,
-//                                content:d.msg,
-//                            }
-//                        })
-//                    }
-//                }
             }
         })
     }
@@ -82,11 +80,8 @@ class Circle extends Component {
             data:{msgId:e},
             success:function(d){
                 if(d.code == 200){
-                   $(that.refs[e]).find('.sys_top p').removeClass('noisread').addClass('isread');
-                   clearTimeout(t);
-                    var t=setTimeout(function() {
-                        that.props.shownum()
-                    },500); 
+                   $(that.refs[e]).find('.sys_top span').removeClass('noisread').addClass('isread');
+                   
                 }else{
                     that.setState({
                         confirm:{
@@ -98,25 +93,37 @@ class Circle extends Component {
             }
         })
     }
-    yeslink(e,url,h){
+    yeslink(e,url,h,p,m){
+        var t = this;
         $.ajax({
             url:'/msg/msg/read.do',
-            data:{msgId:e},
+            data:{msgId:p},
             success:function(d){
                 if(d.code == 200){
                     
                 }
             }
         })
-        if(h == '3'){
+        if(e){
+            if(h == '3'){
             
-        }else{
-            Router.push({
-              pathname: url,
-              query: { id: e }
-            })
+            }else{
+                if(m == '28' || m == '27'){
+                    Router.push({
+                        pathname: url,
+                        query:{ id: e ,
+                                money: t.state.moneymsg 
+                            }
+                    })
+                }else{
+                    Router.push({
+                        pathname: url,
+                        query: { id: e }
+                    })
+                }
+                
+            }
         }
-        
     }
     tolink(e,url,h){
             $.ajax({
@@ -163,7 +170,7 @@ class Circle extends Component {
 				}
 				else{
 					var f = nowDay-day;
-					t = f == 1?'昨日'+hour+':'+min:mon+'月'+day+'日';
+					t = f == 1?'昨日'+' '+hour+':'+min:mon+'月'+day+'日';
 				}
 			}
 			else{
@@ -188,26 +195,41 @@ class Circle extends Component {
 
                             this.state.viewData.map(function(v,r){
                                 e =v.status == '0' ? 'noisread' : 'isread';
-                                f = that.formattime(v.createDate);
-                                if(v.type == '30'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/user/moneydetail/moneydetail',v.status)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>支付金额：{(v.data.money).toFixed(2)}</p><p>支付来源：{v.data.source}</p></div></div>
-                                }else if(v.type == '0'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.nolink(v.id)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
-                                }else if(v.type == '13'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.tolink(v.id,'/mobi/lend/lendHistory',v.status)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
-                                }else if(v.type == '14'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/lend/myLend',v.status)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
+                                f = that.formattime(v.createTime);
+                                if(v.type == '1'){
+                                    a = <div className="clear cir_all" onClick={()=>{that.tolink(v.id,'/mobi/user/follow/fans',v.status)}}>
+                                            <div className="sys_top clear">
+                                                <p>{v.sourceUser.userName}</p>
+                                                <span className={e}></span>
+                                                <span className="systime">{f}</span>
+                                            </div>
+                                            <div className="sys_bottom">
+                                                <p>关注了你</p>
+                                            </div>
+                                        </div>
+                                }else if(v.type == '20'){
+                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/future/view',v.status,v.id)}}><div className="sys_top clear"><p>{v.title}</p>
+                                    <span className={e}></span>
+                                    <span className="systime">{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
+                                }else if(v.type == '21' || v.type == '22'){
+                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.dataId,'/mobi/user/usercredit/approve',v.status,v.id)}}><div className="sys_top clear"><p>{v.title}</p>
+                                    <span className={e}></span>
+                                    <span className="systime">{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
+                                }else if(v.type == '25' || v.type == '26'){
+                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/circle/components/issure',v.status,v.id)}}><div className="sys_top clear"><p>{v.data.content}</p>
+                                    <span className={e}></span>
+                                    <span className="systime">{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
+                                }else if(v.type == '27'){
+                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/user/moneydetail/moneydetail',v.status,v.id)}}><div className="sys_top clear"><p>{v.title}</p>
+                                    <span className={e}></span>
+                                    <span className="systime">{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
+                                }else if(v.type == '28'){
+                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/wallet/withdraw/withdrawhtml',v.status,v.id,v.type)}}><div className="sys_top clear"><p>{v.title}</p>
+                                    <span className={e}></span>
+                                    <span className="systime">{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
                                 }
-                                else if(v.type == '20'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/future/view',v.status)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
-                                }else if(v.type == '21'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/user/usercredit/approve',v.status)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
-                                }else if(v.type == '22'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.yeslink(v.id,'/mobi/user/usercredit/approve',v.status)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
-                                }else if(v.type == '25'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.nolink(v.id)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
-                                }else if(v.type == '26'){
-                                    a = <div className="clear cir_all" onClick={()=>{that.nolink(v.id)}}><div className="sys_top clear"><p className={e}>{v.title}</p><span>{f}</span></div><div className="sys_bottom"><p>{v.msg}</p></div></div>
+                                else{
+                                    a = ''
                                 }
                                 return (
                                     <li key = {r} ref={v.id}>
@@ -223,7 +245,7 @@ class Circle extends Component {
                 </div>
             )
         }else{
-            return <Text_none text=""/>;
+            return <Text_none text="暂无消息"/>;
         }
 }
 }
@@ -231,71 +253,17 @@ class Circle extends Component {
 export default  class Cyts extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-			fir:null,
-            sec:null,
-            third:null
-        }
-        this.noreadnum = this.noreadnum.bind(this);
     }
     componentDidMount() {
-        clearTimeout(t);
-        var that = this;
-        var t=setTimeout(function() {
-            that.noreadnum();
-        },500); 
+        
     }
-    //未读消息数量显示
-    noreadnum(){
-        let that = this;
-         $.ajax({
-            url:'/msg/msg/count.do',
-            success:function(d){
-                if(d.code == 200){
-                    for(var i=0;i<d.data.length;i++){
-                        if(d.data[i].classify == '1'){
-                            that.setState({
-                                fir : d.data[i].count
-                            })
-                        }else if(d.data[i].classify == '3'){
-                            that.setState({
-                                sec : d.data[i].count
-                            })
-                        }else if(d.data[i].classify == '2'){
-                            that.setState({
-                                third:d.data[i].count
-                            })
-                        }      
-                    }
-                }
-            }
-        })   
-    }
+    
     render() {
-        let a,b,c;
-        a = this.state.fir > 0 ? 'showred':'';
-        b = this.state.sec > 0 ? 'showred':'';
-        c = this.state.third > 0 ? 'showred':'';
         return <div>
         <Header_title text="消息"/>
         <div><Header text="消息" /></div>
         <section className="page-main">
-            <ul className="mes_list">
-                <li>
-                    <Link href="./economiccircle">
-                        <a>经济圈<span className={b}></span></a>
-                    </Link>
-                </li>   
-                <li>
-                    <Link href="./helpother">
-                        <a>互助<span className={c}></span></a>
-                    </Link>
-                </li>
-                <li>
-                    <a className="active">系统消息<span className={a}></span></a>
-                </li>
-            </ul>
-            <Circle shownum={this.noreadnum}/>
+            <Circle/>
             <Style/>
         </section>
     </div>

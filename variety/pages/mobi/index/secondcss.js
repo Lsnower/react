@@ -25,7 +25,7 @@ export default () => ( < style >{ `
 		font-size:14px;
 		font-family: Microsoft YaHei,Arial,Verdana,Sans-serif;
 		color: #2b2b2b;
-		background : #e7e7e8;
+		background : #f5f5f5;
 		overflow-x: hidden;
 	}
 	.bottom_line {
@@ -150,7 +150,6 @@ export default () => ( < style >{ `
 		width: 100%;
 		margin-bottom: 0.5rem;
 		background: #FFF;
-		margin-top: -3%;
 	}
 	.special_content li{
 		width: 100%;
@@ -178,11 +177,12 @@ export default () => ( < style >{ `
 		line-height: 0.55rem;
 		float: left;
 		font-size: 0.16rem;
+		display: flex;
 	}
 	.special_content .special_cright span{
 		display: block;
-		float: left;
 		color: #838489;
+		flex: 1;
 	}
 	.special_content .special_cright span.special_red{
 		color: #cd4a47;
@@ -191,9 +191,97 @@ export default () => ( < style >{ `
 		color: #33d37e;
 	}
 	.special_bd{
-		width: 38%;
+		text-indent: 0.35rem;
 	}
 	.special_bf{
-		margin-left: 15%;
+		
 	}
+	
+	.special_main ul.top{
+		width:100%;
+		display:flex;
+		background:#f5f5f5;
+		border-bottom:.01rem solid #ddd;
+		padding:0 .1rem;
+		margin-top: -2%;
+	}
+	.special_main ul.top li{
+		flex:1;
+		text-align:left;
+		font-size:.1rem;
+		color:#999;
+		line-height:.32rem;
+	}
+	.special_main ul.top li.name{
+		flex:2;
+	}
+	.special_main ul.top li:last-child{
+		text-align:right;
+	}
+	
+	.special_main div.list{
+		width:100%;
+		display:flex;
+		display:-webkit-flex; 
+		padding:.1rem; 
+		border-bottom:.01rem solid #ddd; 
+		position: relative;
+		background:#fff;
+	}
+	.special_main div.list span{
+		flex:1;
+		-webkit-flex:1;
+		display:block;
+		font-size:.15rem;
+	}
+	.special_main div.list span.pz_bt{
+		color: #0c0f16;
+	}
+
+
+	.special_main div.list span:first-child{
+		flex:2;
+		-webkit-flex:2;
+		color:#222;
+		font-size:.15rem;
+	}
+	.special_main div.list span em{
+		display:block;
+		font-size:.1rem;
+		font-style:normal;
+		color:#999;
+	}
+	.special_main span.price,span.percent{
+		line-height:.32rem;
+		color:#838489;
+		font-size:.17rem;
+	}
+	.special_main span.thigh{
+		color:#cd4a47;
+	}
+    .special_main span.tlow{
+		color:#2ecc9f;
+    }
+    .special_main div.list span b{
+	 	width:.7rem;
+		height:.27rem;
+		display:block;
+		color:#fff;
+		text-align:center;
+		line-height:.27rem;
+		font-size:.15rem;
+		float: right;
+		font-weight: normal;
+    }
+    .special_main div.list span b.thigh{
+		background:#cd4a47;
+   	}
+	.special_main div.list span b.istp_class{
+		background:#838489;
+   	}
+	.special_main div.list span b.tlow{
+		background:#2ecc9f;
+  	}
+	
+	
 ` }</style>)

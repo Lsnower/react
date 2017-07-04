@@ -8,7 +8,6 @@ import Header_title from '../../common/header/header_title.js';
 import Header from '../../common/header/header_left.js';
 import Style from './setter_css.js';
 import Text_none from '../../common/text_none.js';
-import InfiniteScroll from 'react-infinite-scroll-component';
 class Acclist extends Component {
   constructor(props) {
     super(props)
@@ -21,10 +20,7 @@ class Acclist extends Component {
             title:'',
         },
         fun:null,
-        viewData:[],
-        viewPage:0,
-        viewMore:true,
-        bigHeight:500,
+        viewData:[]
     }
     this.handler = this.handler.bind(this);
     this.showok = this.showok.bind(this);
@@ -42,15 +38,12 @@ class Acclist extends Component {
         t.serverRequest=$.ajax({
             type:'get',
             url:'/user/followShield/myShield.do',
-            data:{page:t.state.viewPage,pageSize:15},
+            data:{},
             dataType:'JSON',
             success:function(e){
                 if(e.code==200){
                     t.setState({
-                        viewData:t.state.viewData.concat(e.data),
-                        viewPage:t.state.viewPage+1,
-                        viewMore:e.resultCount>(t.state.viewPage+1)*15?true:false,
-                        bigHeight:H
+                        viewData:e.data
                     })
                 }else{
                     if(e.code == 503){
@@ -151,7 +144,6 @@ class Acclist extends Component {
             <Style/>
             <div className="content">
               <ul className="screen_list" >
-                <InfiniteScroll  next={this.showlistmsg} height={this.state.bigHeight} hasMore={this.state.viewMore} loader={ <div className="view-bottom">加载更多</div>} endMessage={<div className="view-bottom">已加载全部</div>}>
                  {
                         this.state.viewData.map(function(v,r){
                             myimg = v.shielduserPortrait ? v.shielduserPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200' : "../../../static/mine/headportrait160x160@3x.png";
@@ -164,7 +156,6 @@ class Acclist extends Component {
                             )
                         })
                 }
-                </InfiniteScroll>
               </ul>
             </div>
             <Alert type='2' confirm={this.state.confirm} isOk={this.state.fun}/>

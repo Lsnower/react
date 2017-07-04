@@ -7,13 +7,15 @@
 
 import Router from 'next/router';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Link from 'next/link'
 import Userinfo from './userInfo.js';
 import LendUserInfo from '../../lend/lend_userInfo.js'
 import Lend_con from '../../lend/lend_con.js';
 import Issure_con from './issure_con.js';
 import Confirm from '../../common/confirm.js';
 import Text_none from '../../common/text_none.js';
-
+import Contest_con from './Contest_con.js';
+import ContestUserInfo from './ContestUserInfo.js';
 
 class Service extends React.Component{
     constructor(props) {
@@ -35,7 +37,7 @@ class Service extends React.Component{
                         padding: .1rem .13rem;
                         margin-top: .1rem;
                         background: #fff;
-
+						padding-bottom: 0.4rem;
                     }
                     .content{
                         width:100%;
@@ -93,6 +95,8 @@ class Lending extends React.Component{
                 padding: .1rem .13rem;
                 margin-top: .1rem;
                 background: #fff;
+				border-top: 1px solid #ddd;
+				border-bottom: 1px solid #ddd;
             }
         `}</style>
         </div>
@@ -100,6 +104,34 @@ class Lending extends React.Component{
       )
     }
 }   
+
+
+class Contest extends React.Component{
+    constructor(props) {
+        super(props);
+    }
+    render(){
+      return (
+        <div>
+        <section className="finance">
+            <ContestUserInfo user={this.props.data} isLogin={this.props.isLogin}/>
+            <Contest_con info={this.props.data} isLogin={this.props.isLogin}/>
+        </section>
+        <style jsx>{`
+            .finance {
+                padding: .1rem .13rem;
+                margin-top: .1rem;
+                background: #fff;
+				border-top: 1px solid #ddd;
+				border-bottom: 1px solid #ddd;
+            }
+        `}</style>
+        </div>
+        
+      )
+    }
+}
+
 class Finance extends React.Component{
     constructor(props) {
         super(props);
@@ -152,30 +184,36 @@ class Finance extends React.Component{
                     t.setState({
                         viewData:t.state.viewData.concat(e.data),
                         viewPage:t.state.viewPage+1,
-                        viewMore:e.resultCount>(t.state.viewPage+1)*15?true:false,
+                        viewMore:e.data.length>14?true:false,
                         bigHeight:H,
                     })
                     t.setState({
                         createTime: t.state.viewPage == 0? '':t.state.viewData[t.state.viewData.length-1].createTime
                     })
 
-                
                 }
             }
         })
     }
     render(){
+		//<Contest data={this.state.viewData[0]} isLogin={this.state.isLogin}/>
+		var Mnews = parseInt(this.props.news)
         if(this.state.viewData.length){
              return (<div >
                 <div className="infinite">
-            <InfiniteScroll  next={this.toLoadView} height={this.state.bigHeight} hasMore={this.state.viewMore} loader={ <div className="view-bottom">加载更多</div>} endMessage={<div className="view-bottom">已加载全部</div>}>
-        {     
-            this.state.viewData.map((e,i) => {
-                e.viewPage = this.state.viewPage;
-                return (<div key={i}>{e.type == 1?<Lending key={i} data={e} isLogin={this.state.isLogin}/>:<Service key={i} data={e} isLogin={this.state.isLogin}/>}</div>)
-            })
-           
-        }
+            <InfiniteScroll  next={this.toLoadView} height={this.state.bigHeight} hasMore={this.state.viewMore} loader={ <i className="view-bottom">加载更多</i>} endMessage={<i className="view-bottom">已加载全部</i>}>
+            	<div className={Mnews>0?'news_main news_show':'news_main news_hide'}>
+					<Link href={'/mobi/circle/components/message_list'}><a>{this.props.news+'条消息'}<img src='/static/circle/opinion_message@2x.png' /></a></Link>
+				</div>
+				
+				{     
+					this.state.viewData.map((e,i) => {
+						e.viewPage = this.state.viewPage;
+						return (<div key={i}>{ e.type == 1 ? <Lending key={i} data={e} isLogin={this.state.isLogin}/> : (e.type == 2 ? <Service key={i} data={e} isLogin={this.state.isLogin}/> : (e.type == 3 ? <Contest key={i} data={e} isLogin={this.state.isLogin}/> : '')) }</div>)
+					})
+
+				}
+           		
             </InfiniteScroll>
             </div>
         </div>)

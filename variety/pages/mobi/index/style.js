@@ -26,7 +26,7 @@ export default () => ( < style > {
 	body{
 		font-size:14px;
 		font-family: Microsoft YaHei,Arial,Verdana,Sans-serif;
-		background:#e7e7e8;
+		background:#f5f5f5;
 		color: #050100;
 		overflow-x: hidden;
 	}
@@ -153,7 +153,7 @@ export default () => ( < style > {
 
 	.indexbig{
 		width: 100%;
-		height: 0.35rem;
+		height: 0.45rem;
 		background: #FFF;
 		margin-top: 0.15rem;
 		position: relative;
@@ -180,6 +180,8 @@ export default () => ( < style > {
 	}
 	.indexbig .big_right li{
 		width: 85%;
+		height: 100%;
+		line-height: 0.45rem;
 		display: block;
 		overflow: hidden;
     	text-overflow: ellipsis;
@@ -377,7 +379,7 @@ export default () => ( < style > {
 		height: 0.17rem;
 		display: block;
 		background-size: 100% 100%;
-		margin-top: 0.08rem;
+		margin-top: 0.13rem;
 		margin-left: 0.14rem;
 		color:#ef6d6a;
 		border: 1px solid #ef6d6a;
@@ -395,10 +397,13 @@ export default () => ( < style > {
 		background: url(/static/index_img/fanli_list_icon_opinion@3x.png) no-repeat;
 		background-size: 100% 100%;
 	}
+	.loan_qhpk{
+		background: url(/static/index_img/fanli_list_icon_futuresvs@3x.png) no-repeat;
+		background-size: 100% 100%;
+	}
 	
 	/*文档宽度小于 375 像素*/
 	@media all and (max-width:375px) {
-		
 		
 		.loan_jkyd{
 			background: url(/static/index_img/fanli_list_icon_borrow@2x.png) no-repeat;
@@ -408,11 +413,70 @@ export default () => ( < style > {
 			background: url(/static/index_img/fanli_list_icon_opinion@2x.png) no-repeat;
 			background-size: 100% 100%;
 		}
+		.loan_qhpk{
+			background: url(/static/index_img/fanli_list_icon_futuresvs@2x.png) no-repeat;
+			background-size: 100% 100%;
+		}
 		
 	}
 	
+	.index_mask{
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.4);
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 100;
+		display: none;
+	}
 	
+	.index_mask_content{
+		width: 74%;
+		background: #FFF;
+		position: absolute;
+		top: 25%;
+		left: 50%;
+		margin-left: -37%;
+		border-radius: 5px;
+		color: #0c0f16;
+	}
+	.index_mask_content .index_mask_top{
+		padding: .15rem .18rem 0 .18rem;
+		text-align: center;
+		line-height: 0.22rem;
+		
+	}
+	.index_mask_top .mask_last_p{
+		text-align: left;
+		margin: 0 auto;
+	}
+	.index_mask_content .index_mask_top h3{
+		margin-bottom: 0.1rem;
+	}
 	
-
+	.index_mask_bottom{
+		width: 100%;
+		height: 0.38rem;
+		display: flex;
+		margin-top: 0.15rem;
+		border-radius: 0 0 5px 5px;
+		overflow: hidden;
+	}
+	.index_mask_bottom div{
+		width:50%;
+		float: left;
+		flex: 1;
+		color: #FFF;
+		text-align: center;
+		line-height: 0.38rem;
+	}
+	.index_mask_bottom .mask_btn_l{
+		background: #d3d2d3;
+	}
+	.index_mask_bottom .mask_btn_r{
+		background: #cd4a47;
+	}
+	
 `
 	} < /style>)

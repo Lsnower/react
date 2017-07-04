@@ -40,16 +40,17 @@ class Flist extends React.Component {
     }
     getQuota(){   
         if(this.isMouted){
+            clearTimeout(this.timer);
             var _this=this,v = _this.state.codes.join(',');
             $.ajax({
                 type:'post',
-                url:'/stock/comb',
-                data:{stock_code:v},
+                url:'/stk/stk/list.do',
+                data:{codes:v},
                 dataType:'JSON',
                 success:function(e) {
-                    var d = e.result[0].data,o={};
+                    var d = e.data,o={};
                     for(var i=0;i<d.length;i++){
-                            o[d[i].stock_code] = d[i]
+                            o[d[i].instrumentId] = d[i]
                        }
                         _this.setState({
                             quota:o
@@ -78,11 +79,24 @@ class Flist extends React.Component {
                 {
 
                     this.props.data.map((e,i) => {
+						var isTp = '';
+						var isTpclass1 = '';
+						var isTpclass2 = '';
+						if((o[e.varietyType]?o[e.varietyType].status:1)==0){
+							isTp = '停牌';
+							isTpclass1 = 'price';
+							isTpclass2 = 'percent tpnone'
+						}
+						else{
+							isTp = o[e.varietyType]?(parseFloat(o[e.varietyType].upDropPrice)<0?'':'+')+(o[e.varietyType].upDropSpeed*100).toFixed(2)+'%':'';
+							isTpclass1 = o[e.varietyType]&&parseFloat(o[e.varietyType].upDropPrice)<0?'price tlow':'price thigh';
+							isTpclass2 = o[e.varietyType]&&parseFloat(o[e.varietyType].upDropPrice)<0?'percent tlow':'percent thigh';
+						}
                         return(
                             <div key={i} className='list' onClick={()=>{this.hanleLink(e.varietyType,e.varietyId)}}>
                                 <span>{e.varietyName}<em>{e.varietyType}</em></span>
-                                 <span className={o[e.varietyType]&&parseFloat(o[e.varietyType].rise_price)<0?'price tlow':'price thigh'}>{o[e.varietyType]?o[e.varietyType].last_price:''}</span>
-                                <span className={o[e.varietyType]&&parseFloat(o[e.varietyType].rise_price)<0?'percent tlow':'percent thigh'}>{o[e.varietyType]?(parseFloat(o[e.varietyType].rise_price)<0?'':'+')+o[e.varietyType].rise_pre+'%':''}</span>
+                                <span className={isTpclass1}>{o[e.varietyType]?o[e.varietyType].lastPrice.toFixed(e.marketPoint):''}</span>
+                                <span><b className={isTpclass2}>{isTp}</b></span>
                            </div>
                         )
                    
@@ -144,14 +158,14 @@ class Exponent extends React.Component {
             clearTimeout(this.timer);
             var v = d?d.join(','):this.state.exponentIds.join(','),_this=this;
             $.ajax({
-                type:'get',
-                url:'/stock/comb',
-                data:{stock_code:v},
+                type:'post',
+                url:'/stk/stk/list.do',
+                data:{codes:v},
                 dataType:'JSON',
                 success:function(e) {
-                    var d = e.result[0].data,o={};
+                    var d = e.data,o={};
                     for(var i=0;i<d.length;i++){
-                            o[d[i].stock_code] = d[i]
+                            o[d[i].instrumentId] = d[i]
                        }
                         _this.setState({
                             quota:o
@@ -175,9 +189,9 @@ class Exponent extends React.Component {
                         return(
                             <div className='item' key={i} onClick={()=>{this.hanleLink(e.varietyType,e.varietyId)}}>
                                 <span className="name">{e.varietyName}</span>
-                                <span className={o[e.varietyType]&&parseFloat(o[e.varietyType].rise_price)<0?'price tlow':'price thigh'}>{o[e.varietyType]?o[e.varietyType].last_price:''}</span>
-                                <span className={o[e.varietyType]&&parseFloat(o[e.varietyType].rise_price)<0?'range tlow':'range thigh'}>{o[e.varietyType]?o[e.varietyType].rise_price+'  '+(parseFloat(o[e.varietyType].rise_price)<0?'':'+')+o[e.varietyType].rise_pre+'%':''}</span>
-                               
+
+                                <span className={o[e.varietyType]&&parseFloat(o[e.varietyType].upDropPrice)<0?'price tlow':'price thigh'}>{o[e.varietyType]?o[e.varietyType].lastPrice.toFixed(2):''}</span>
+                                <span className='range'>{o[e.varietyType]?(parseFloat(o[e.varietyType].upDropPrice)<0?'':'+')+o[e.varietyType].upDropPrice.toFixed(2)+'  '+(parseFloat(o[e.varietyType].upDropPrice)<0?'':'+')+(o[e.varietyType].upDropSpeed*100).toFixed(2)+'%':''}</span>
                             </div>
                         )
                    
@@ -191,7 +205,6 @@ class Exponent extends React.Component {
                         display:flex;
                         display:-webkit-flex;
                         background:#fff;
-                        margin-bottom:.1rem;
                     }
                     .Exponent .item{
                         flex:1;
@@ -209,22 +222,23 @@ class Exponent extends React.Component {
                     }
                     .Exponent .item span.name{
                         font-size:.15rem;
-                        color:#0c0f16;
+                        color:#222;
 
                     }
                     .Exponent .item span.price{
-                        font-size:.17rem;
+                        font-size:.18rem;
                         font-weight:bold;
 
                     }
                     .Exponent .item span.range{
                         font-size:.1rem;
+                        color:#999;
                     }
                     .Exponent .item span.thigh{
                         color:#cd4a47;
                     }
                     .Exponent .item span.tlow{
-                        color:#33d37e;
+                        color:#2ecc9f;
                     }
                 `}</style>
             </div>)
@@ -282,8 +296,8 @@ export default  class  Stock extends React.Component {
    
             <Head text="股票" />
             <div className="search">
-                <input type='text' placeholder='股票名称、代码' onFocus={this.hanleFocus}/>
                 <div className='search_icon'><img src='/static/future/shares_icon_search@3x.png' /></div> 
+                <input type='text' placeholder='股票名称、代码' onFocus={this.hanleFocus}/>
             </div>
             <Exponent />
             <Flist data={this.state.viewData}/>
@@ -293,56 +307,62 @@ export default  class  Stock extends React.Component {
                 .futures_main{
                     background:#e7e7e8;
                 }
-                 nav{
-                    width:100%;
-                    display:flex;
-                    display:-weblit-flex;
-                    background:#fff;
-                }
-                nav div{
-                    flex:1;
-                    -webkit-flex:1;
-                    text-align:center;
-                }
-                nav  span{
-                    line-height:.5rem;
-                    color:#0c0f16;
-                    font-size:.16rem;
-                    display:block;
-                    position:relative;
-                }
-                 nav span.on{
-                    color:#869bcb;
-                }
-                 nav span.on:after{
-                    content:'';
-                    border-bottom:.02rem solid #869bcb;
-                    width:.5rem;
-                    position:absolute;
-                    left:50%;
-                    top:.48rem;
-                    margin-left:-.25rem;
-                }
+               
                 div.con{
                     display:none;
                 }
                 div.active{
                     display:block;
                 }
+                .search {
+                    padding: .1rem;
+                    background: #c9c9ce;
+                    position: relative;
+                }
+                .search input {
+                    display: block;
+                    width: 100%;
+                    padding-left: .35rem;
+                    font-size: .14rem;
+                    height: .30rem;
+                    line-height: .30rem;
+                    background: #fff;
+                    border-radius: .05rem;
+                    color: #8e8e93;
+                }
+                .search_icon {
+                    position: absolute;
+                    top: .1rem;
+                    left: .1rem;
+                    width: .3rem;
+                    height: .3rem;
+                }
+                .search_icon img {
+                    display: block;
+                    margin: .06rem auto;
+                    height: 60%;
+                }
                 ul.top{
                     width:100%;
                     display:flex;
-                    margin-top:.1rem;
-                    background:#fff;
+                    background:#f5f5f5;
                     border-bottom:.01rem solid #f0efef;
+                    padding-right:.1rem;
                 }
                 ul.top li{
                     flex:1;
                     text-align:left;
                     padding-left:.12rem;
-                    font-size:.14rem;
-                    color:#82848a;
-                    line-height:.36rem;
+                    font-size:.1rem;
+                    color:#999;
+                    line-height:.32rem;
+                }
+                ul.top li:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                }
+                 ul.top li:last-child{
+                    text-align:right;
                 }
                  div.main{
                     background:#fff;
@@ -351,62 +371,60 @@ export default  class  Stock extends React.Component {
                     width:100%;
                     display:flex;
                     display:-webkit-flex; 
-                    padding:.1rem 0; 
-                    border-bottom:.01rem solid #f0efef;                  
+                    padding:.12rem 0; 
+                    border-bottom:.01rem solid #f0efef; 
+                    padding-right:.1rem;                 
                 }
                 div.list span{
                     flex:1;
                     -webkit-flex:1;
                     display:block;
                     padding-left:.12rem;
-                    font-size:.16rem;
+                    
+                }
+                 div.list span:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                    color:#222;
+                    font-size:.15rem;
                 }
                 div.list span em{
                     display:block;
-                    font-size:.12rem;
+                    font-size:.1rem;
                     font-style:normal;
-                    color:#82848a;
+                    color:#999;
                 }
                 span.price,span.percent{
                     line-height:.32rem;
-                    
-                    font-size:.16rem;
+                    color:#838489;
+                    font-size:.17rem;
                 }
                 span.thigh{
                     color:#cd4a47;
                 }
                span.tlow{
-                    color:#33d37e;
+                    color:#2ecc9f;
                }
-               .search{
-                 padding:.15rem;
-                 background:#160509;
-                 position:relative;
-               }
-               .search input{
+               div.list span b{
+                    width:.7rem;
+                    height:.27rem;
                     display:block;
-                    width:100%;
-                    padding-left:.13rem;
+                    color:#fff;
+                    text-align:center;
+                    line-height:.27rem;
                     font-size:.15rem;
-                    height:.35rem;
-                    line-height:.35rem;
-                    background:#fff;
-                    border-radius:.05rem;
-                    color:#e7e7e8;
+                    float: right;
+                    font-weight: normal;
                }
-               .search_icon{
-                    position:absolute;
-                    top:.15rem;
-                    right:.15rem;
-                    width:.63rem;
-                    height:.35rem;
-                    border-left:.01rem solid #f0efef;
+               div.list span b.thigh{
+                background:#ef6d6a;
                }
-               .search_icon img{
-                    display:block;
-                    margin:.03rem auto;
-                    height:80%;
+                div.list span b.tlow{
+                background:#2ecc9f;
                }
+				div.list span b.tpnone{
+					background: #838489;
+				}
             `}</style>
           </div>
         

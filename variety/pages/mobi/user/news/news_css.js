@@ -1,9 +1,6 @@
 
 export default () => ( < style jsx global > {
     `
-.page-main{
-    background:#fff;
-}
 .mes_list{
     width:100%;
     height:0.5rem;
@@ -56,8 +53,9 @@ export default () => ( < style jsx global > {
     width:100%;
 }
 .circle_list li{
-    width:100%;
-    border-bottom:1px solid #e7e7e8;
+    width:95%;
+    background:#fff;
+    margin:0.1rem auto;
 }
 img{
     width:0.5rem;
@@ -97,27 +95,24 @@ img{
     height:100%;
     color:#b3b3b3;
 }    
-.isread {color:#82848a !important;}
-.circle_main .noisread {color:#0c0f16 !important;}
 /*系统消息开始*/
     .sys_top p{
         float: left;
-        color: #141822;
+        color: #222222;
         font-size:0.15rem;
-        font-weight:600;
     }
-    .sys_top span{
+    .sys_top .systime{
         float: right;
         display: block;
-        font-size:0.12rem;
-        color:#b3b3b3;
+        font-size:0.10rem;
+        color:#999999;
     }
     .sys_bottom{
         margin-top:0.1rem;
     }
     .sys_bottom p{
-        font-size:0.14rem;
-        color:#a7a8ac;
+        font-size:0.12rem;
+        color:#999999;
         line-height:0.23rem;
     }
     .sys_top .success{
@@ -130,6 +125,15 @@ img{
         background:url(../../../static/mine/file.png) no-repeat;
         background-size:0.2rem 0.2rem;
         text-indent:25px;
+    }
+    
+    .noisread{
+        height: 8px;
+        width: 8px;
+        background: #e7423e;
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 0.05rem
     }
     
 `

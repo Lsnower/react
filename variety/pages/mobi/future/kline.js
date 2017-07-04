@@ -186,15 +186,15 @@ export default  class  Sline extends React.Component {
                     var str = j==1440?'M-D':'h:m';
                     return b.format(i,str);
                 },
-                a = "#e7e7e8",
-                r = "#e7e7e8",
-                n = "#b3b3b3",
+                a = props.color?props.color.line:"#ddd",
+                r = props.color?props.color.line:"#ddd",
+                n = props.color?props.color.text:"#999",
                 c = "#cd4a47",
-                o = "#33d37e",
+                o = "#2ecc9f",
                 l = "#cd4a47",
-                g = "#869bcb",
-                u = "#a63beb",
-                d = "#d7ce51",
+                g = "#6a96ef",
+                u = "#dc6aef",
+                d = "#efc86a",
                 x = "#0f4a96",
                 m = 10,
                 _ = .8,
@@ -217,7 +217,7 @@ export default  class  Sline extends React.Component {
                         this.price = 0,
                         this.moments = [],
                             
-                        this.svgWidth = document.body.clientWidth//t.getSize(this.svg).width,
+                        this.svgWidth = document.body.clientWidth-20//t.getSize(this.svg).width,
                         this.svgHeight = t.getSize(this.svg).height,
                         this.gPricesEl = t.childs(this.svg)[1],
                         this.gVolumesEl = t.childs(this.svg)[2],
@@ -252,7 +252,7 @@ export default  class  Sline extends React.Component {
                     },
                     draw: function (i) {
                         if (i) {
-                            j = i.type;
+                            j = this.type=i.type;
                             var t = this.data;
                             i.data && (t = this.data = i.data, this.days = this._getDays(t.length, y), this._calcMA()),
                             i.days && (this.days = this._getDays(t.length, i.days)),
@@ -278,11 +278,12 @@ export default  class  Sline extends React.Component {
                                 var strMa5 = '';
                                 var strMa10 = '';
                                 var strMa20 = '';
+                                var len = 40;
                                 var a = o.gPricesEl,
                                 h = o.gBlockEl,
                                 c = o.priceChartBox.x.end,
                                 b = o.priceChartBox.y.height,
-                                len = 40,
+                                
                                 _clear = function() {
                                     $.each(u,
                                     function (n,t) {
@@ -295,7 +296,8 @@ export default  class  Sline extends React.Component {
                                 },
                                 _draw = function(el,end) {
                                     var t = el.changedTouches[0],
-                                    numNow = parseInt((t.pageX / o.svgWidth * len)),
+                                    numNow = o.type==1440?parseInt(o.svgWidth*(t.pageX / o.svgWidth)/10):parseInt(t.pageX / o.svgWidth*len),
+                                    numNow = numNow<0?0:numNow,
                                     _ = o.moments[numNow],
                                     arr_all = [].concat(o.moments),
                                     _data = _;
@@ -307,7 +309,7 @@ export default  class  Sline extends React.Component {
                                     var _y = (o.beginPrice - _data.close) / (o.beginPrice - o.endPrice) * b;
                                     var sTime = s(_data.time);
                                     var smallN = o.scale;
-                                    var _f = o.moments[(parseInt((t.pageX / (o.svgWidth-45) * len))-1)] ? o.moments[(parseInt((t.pageX / (o.svgWidth-45) * len))-1)] : 0;
+                                    var _f = _data;
                                     
                                     _f == 0 ?  kcolor = Acolor[0] : ( (_f - _data.open) > 0 ? kcolor = Acolor[1] : kcolor = Acolor[0] );
                                     (_data.open - _data.high) > 0 ? Hcolor = Acolor[1] : Hcolor = Acolor[0];
@@ -350,14 +352,13 @@ export default  class  Sline extends React.Component {
                                     o.gPricesEl.children[(o.gPricesEl.children.length-2)].innerHTML  = '<tspan>MA10:'+ma10_num+'</tspan>';
                                     o.gPricesEl.children[(o.gPricesEl.children.length-1)].innerHTML = '<tspan>MA20:'+ma20_num+'</tspan>';
                                     /*end*/
-                                    
-                                    u.push(o._line(a, 0, _y, c, _y, '#cd4a47'));
-                                    u.push(o._line(a, t.pageX, 0, t.pageX, b, '#cd4a47'));
+                                    u.push(o._line(a, 0, _y, c, _y, props.color?props.color.path:'#222'));
+                                    u.push(o._line(a, t.pageX, 0, t.pageX, b, props.color?props.color.path:'#222'));
                                     
                                     
                                     if( t.pageX < (c/2) ){
-                                        var maxc = $(window).width();
-                                        paint((maxc-c/3.5),maxc-5,'end');
+                                        var maxc = o.priceChartBox.x.end;;
+                                        paint(maxc-80,maxc-3,'end');
                                     }
                                     else{
                                         paint(0,5,'start');
@@ -367,7 +368,7 @@ export default  class  Sline extends React.Component {
                                     function paint(hx,x,w){
                                         var fs = w + '; font-size:0.12rem;';
                                         var fs1 = w + '; font-size:0.14rem;';
-                                        f.push(o._rect(a,hx,15,120,170,'#0e2947','none'));
+                                        f.push(o._rect(a,hx,15,80,170,'#0e2947','none'));
                                         f.push(o._text(a,x,26,sTime,grayC,w,'none'));
                                         f.push(o._text(a,x,42,'开盘',whiteC,fs,'none'));
                                         f.push(o._text(a,x,60,_data.open.toFixed(smallN),kcolor,fs1,'none'));

@@ -25,7 +25,7 @@ class Pay extends React.Component{
     componentDidMount(){
         var t = this;
         var orderId = t.props.url.query.id;
-
+        
         // 获取意向金
         $.ajax({
             type:'post',
@@ -134,28 +134,32 @@ class Pay extends React.Component{
         this.setState({show:!this.state.show})
     }
     render(){
+        var a;
         return (
             <div>
                 <Header_title text="支付意向金"/>
                 <Header text="支付意向金"/>
                 <div className="wrap">
-                    <img src="/static/circle/pay_bg_money@3x.png" />
                     <div className="wrap-con">
-                        <p className="pay-title">意向金</p>
                         <p className="pay-money">
-                            <span className="colorR">￥{this.state.payMoney?this.state.payMoney:5}</span>
+                            <span style={{'fontSize':'0.2rem','color':'#cd4a47'}}>¥  </span>
+                            <span className="colorR">{this.state.payMoney?this.state.payMoney:5}</span>
                         </p>
                         <p className="advice">意向金为平台服务费，无论用户是否成功借款都不予退还，请谅解</p>
                     </div>
                 </div>
-                <ul className="pay-list">
+                <ul className="pay-list" ref='paylist'>
                     {
                         this.state.platFormData.map((e,i)=>{
                             {
                                 e.index = i;
                                 if(e.status ==1){
+                                    
+                                    var d = e.type == 1 ? <img src="../../../static/help/pay_alipay@2x.png"/> : <img src="../../../static/help/pay_wechat@2x.png"/>
+                                    a = e.type == '3' ? 'none' :''
                                     return(
-                                        <li className={e.check?"yes":"no"} key={i} onClick={(i)=>this.choose(e.index)}>
+                                        <li className={e.check? a+' '+"yes":a+' '+"no"} type = {e.type} key={i} onClick={(i)=>this.choose(e.index)}>
+                                            {d}
                                             <span className="pay-txt" data-type={e.platform?e.platform:'-'}>{e.name?e.name:'-'}</span>
                                         </li>
                                     )
@@ -173,7 +177,10 @@ class Pay extends React.Component{
                 <Confirm type={2} confirm={this.state} isOk={()=>{this.canOk()}} isNot={()=>{this.canNot()}}/>
                 <style jsx global>{`
                     html,body{
-                       background: #e7e7e8; 
+                       background: #f5f5f5; 
+                    }
+                    .none{
+                        display:none !important;
                     }
                 `}</style>
                 <style jsx>{`
@@ -181,8 +188,9 @@ class Pay extends React.Component{
                         position: relative;
                         width: 100%;
                         height: 1.5rem;
-                        margin: .2rem auto;
+                        margin: 0 auto 0.2rem;
                         padding: 0 .3rem;
+                        background:#fff;
                     }
                     .wrap-con{
                         position: absolute;
@@ -195,7 +203,8 @@ class Pay extends React.Component{
                         width: 100%;
                     }
                     .wrap p{
-                        padding-top: .2rem;
+                        padding-top: .3rem;
+                        color:#cd4a47;
                     }
                     .pay-title{
                         color: #b3b3b3;
@@ -212,7 +221,9 @@ class Pay extends React.Component{
                     .wrap p.advice{
                         font-size: .12rem;
                         color: #82848a;
-                        padding: .2rem .3rem 0;
+                        padding: .1rem .3rem 0;
+                        text-align:center;
+                        line-height:20px;
                     }
                     .pay-list{
                         background: #fff;
@@ -222,15 +233,15 @@ class Pay extends React.Component{
                         width: 100%;
                         height: .6rem;
                         line-height: .6rem;
-                        padding-left: .3rem;
+                        padding-left: .15rem;
                         border-bottom: 1px solid #e7e7e8;
                     }
                     .pay-list li.no{
-                        background: url(/static/circle/newaccount_btn_nor@3x.png) no-repeat .22rem center;
+                        background: url(/static/help/checkbox_click_uncheck@2x.png) no-repeat 95% center;
                         background-size: 5%;
                     }
                     .pay-list li.yes{
-                        background: url(/static/circle/newaccount_btn_click@3x.png) no-repeat .22rem center;
+                        background: url(/static/help/checkbox_click@2x.png) no-repeat 95% center;
                         background-size: 5%;
                     }
                     .pay-list li:last-child{
@@ -240,7 +251,9 @@ class Pay extends React.Component{
                         margin-left: .2rem;
                     }
                     .pay-btn{
-                        padding: .5rem .1rem;
+                        width: 100%;
+                        position:fixed;
+                        bottom:0;
                     }
                     .pay-btn a{
                         display: inline-block;
@@ -248,7 +261,6 @@ class Pay extends React.Component{
                         text-align: center;
                         height: .5rem;
                         line-height: .5rem;
-                        border-radius: .04rem;
                         color: #fff;
                         font-size: .15rem;
                     }
@@ -257,6 +269,11 @@ class Pay extends React.Component{
                     }
                     .pay-btn a.yes{
                         background: #cd4a47;
+                    }
+                    img{
+                        width:0.4rem;
+                        float: left;
+                        margin-top:0.1rem;
                     }
                 `}</style>
             </div>

@@ -6,19 +6,20 @@ body{overflow-x: hidden;}
 .page-header h3{ font-weight:100; text-align:center; line-height:0.5rem;}
 .page-header .right{ width:0.35rem; height:0.14rem; position:absolute; top:0.15rem; right:0.18rem;}
 
-article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat left top;background-size:100% 100%;}
-.imgdeali{background:url(../../static/mine/mine_list_icon_detail@3x.png) no-repeat left top;background-size:100% 100%;}
+article#accounts{background:#fff;}
+.imgvallet{background:url(../../static/mine/mine_list_icon_wallet@3x.png) no-repeat left top;background-size:100% 100%;}
 .imgnews{background:url(../../static/mine/mine_list_icon_news@3x.png) no-repeat left top;background-size:100% 100%;}
 .imgopinion{background:url(../../static/mine/userinformation_list_publish@3x.png) no-repeat left top;background-size:90% 100%;}
 .imgsetting{background:url(../../static/mine/mine_list_icon_setting@3x.png) no-repeat left top;background-size:100% 100%;}
 .imgaboutus{background:url(../../static/mine/mine_list_icon_aboutus@3x.png) no-repeat left top;background-size:100% 100%;}
+.imgbowl{background:url(../../static/bowl/mine_cell_icon_jbp@3x.png) no-repeat left top;background-size:100% 100%;}
 
-.nologin{height:0.5rem;width:1.5rem;border-radius:0.15rem;border:1px solid #cd4a47;line-height:0.5rem;margin:0.5rem auto 0;font-size:0.16rem;color:#cd4a47;}
-#accounts .user{display: flex;display: -webkit-flex; width:100%; height:1.6rem; overflow:hidden;text-align: center;color:#fff;}
+.nologin{height:0.5rem;width:1.5rem;border-radius:0.15rem;line-height:0.5rem;margin:0.5rem 0;font-size:0.16rem;color:#cd4a47;}
+#accounts .user{display: flex;display: -webkit-flex; width:100%; height:1rem; overflow:hidden;text-align: center;color:#fff;}
 #accounts .user a{flex: 1.2;-webkit-flex: 1.2;}
-#accounts .user a.goDetail{display: inline-block;}
+#accounts .user a.goDetail{display: inline-block;position:relative;}
 #accounts .user .zh-type{font-size:.15rem; margin-bottom:.02rem;}
-#accounts .user .img{ width:0.77rem; height:0.77rem;display:block; margin:0.1rem auto; border-radius: 50%; margin-top: 0.3rem;}
+#accounts .user .img{ width:0.6rem; height:0.6rem;display:block; float: left;border-radius: 50%; margin: 0.3rem 0.1rem 0 0.1rem;}
 #accounts .user .boy{
     background:url(./static/head_visitor.png) no-repeat;
     background-size:contain;
@@ -28,13 +29,23 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     background-size:contain;
 }
 
-#accounts .user .name{ width:100%; height:0.3rem; display:block; text-align:center; line-height:0.3rem; color:#fff; font-size:0.12rem;}
-.account{background:#252830;}
-.account .summary{display: flex; display: -webkit-flex; text-align: center;}
-.account ul li{flex: 1; -webkit-flex: 1; margin: 0.06rem 0; border-right: 1px solid #878182;box-sizing:border-box;}
-.account ul li:last-child{border:0 none;}
-.account .account-text{color:#b6b6b6;margin:.05rem;}
-.account .account-num{color:#fff;margin:.05rem;height:.19rem;}
+.goDetail .rightBg {
+     height:1.2rem;
+     line-height: 1.2rem;
+     display:block;
+     font-size:0.15rem;
+     color:#e43022;
+     position: absolute;
+     right: 2%;
+     top:20%;
+     text-align: right;   
+}
+#accounts .user .name{height:100%; display:block;line-height:1.2rem; color:#222222; font-size:0.16rem;float: left;}
+.account .summary{display: flex; display: -webkit-flex; text-align: center;width: 90%;border-top: 1px solid #dddddd;margin: 0 auto;}
+.account ul li{flex: 1; -webkit-flex: 1;;box-sizing:border-box;background:url('../../../static/mine/mine_heng.png') no-repeat center right;}
+.account ul li:last-child{background:none;}
+.account .account-text{color:#999999;margin:.05rem;}
+.account .account-num{color:#222;margin:.05rem;height:.19rem;font-size:0.14rem;}
 
 .account .action{ width:100%; height:0.53rem; display:-webkit-flex; display:-o-flex; display:-moz-flex; display:flex;}
 .account .action div{ width:50%; height:100%; float:left;}
@@ -45,7 +56,7 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
 .bottom1{ margin-bottom:0;}
 .bottom1 li:nth-child(1){border-bottom: 1px solid #252021;}
 .mine-mod-list span{ float:left;}
-.mine-mod-list span:nth-of-type(2){ text-indent:0.13rem;color:#0c0f36;font-weight:800;}
+.mine-mod-list span:nth-of-type(2){ text-indent:0.13rem;color:#222222;}
 .mine-mod-list .leftBg{ margin-left:0.17rem;}
 .mine-mod-list .rightBg{
      height:.53rem;
@@ -58,16 +69,34 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
      top:0;
      text-align: right;
 }
-.mine-mod-list .leftBg{ width:0.2rem; height:0.2rem; font-size:0.2rem; display:block; margin-top: 0.17rem;}
-.last{ width:100%; height:2.12rem;margin-bottom:0.5rem;}
+.mine-mod-list .leftBg{ width:0.22rem; height:0.22rem; font-size:0.2rem; display:block; margin-top: 0.15rem;}
+
+.last0{ width:100%; height:1.06rem;}
+.last0 li{ width:100%; height:0.53rem; line-height: .53rem; position:relative;}
+.last0 li:after{
+    content: "";
+    display: block;
+    position: absolute;
+    left: 5%;
+    width: 100%;
+    height: 1px;
+    background: #e7e7e8;
+    transform:scale(1);
+    -moz-transform:scale(1);
+    -o-transform:scale(1);
+    -webkit-transform:scale(1);
+}
+
+
+.last{ width:100%; height:2.12rem;margin-bottom:1.5rem;}
 .last li{ width:100%; height:0.53rem; line-height: .53rem; position:relative;}
 .last li:nth-of-type(1){ position:relative;}
 .last li:after{
     content: "";
     display: block;
     position: absolute;
-    left: -50%;
-    width: 200%;
+    left: 5%;
+    width: 100%;
     height: 1px;
     background: #e7e7e8;
     transform:scale(1);
@@ -115,7 +144,7 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
 }
 
 #renzheng{
-    color:#869bcb;
+    color:#999;
 }
 
 .loading {
@@ -213,17 +242,16 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     -webkit-box-orient: vertical;
 }
 #quit{
-    width: 90%;
+    width: 100%;
     height: 0.4rem;
     line-height: 0.4rem;
-    font-size: 0.14rem;
+    font-size: 0.15rem;
     background: #82848a;
-    color: #FFF;
+    color: #cd4a47;
     text-align: center;
-    margin:0.5rem auto;
-    border-radius: 4px;
-    -webkit-border-raidus:4px;
-    -moz-border-radius:4px;
+    position:fixed;
+    bottom:0px;
+    background:#fff;
 }
 .Phone{color:#fff;}
 #changeName {
@@ -335,11 +363,11 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     margin: 0 auto;
 }
 .sbtn {
-    width: 80%;
+    width: 94%;
     height: .42rem;
     line-height: .42rem;
     text-align: center;
-    margin: 0.5rem auto 0;
+    margin: 0.3rem auto 0;
     font-size: 0.14rem;
     background-color: #cd4a47;
     color: #fff;
@@ -413,14 +441,25 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
 .real{
     padding: .1rem;
     background: #fff;
+    margin-top:0.15rem;
+    position:relative;
+}
+.real img{
+    position: absolute;
+    right:0.15rem;
+    top:0.17rem;
+    width:0.16rem;
+}
+.real .none{
+    display: none;
 }
 .real input.real-name{
     width: 100%;
     height: 0.3rem;
     -webkit-appearance: none;
-    font-size: 0.14rem;
+    font-size: 0.15rem;
     outline: none;
-    color: #0c0f16;
+    color: #222222;
     border: 0 none;
     background: #fff;
     padding-left:.02rem;
@@ -449,9 +488,9 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     display: inline-block;
     -webkit-transform: rotate(45deg);
     transform: rotate(45deg);
-    height: 15px;
-    width: 15px;
-    border-width: 2px 2px 0 0;
+    height: 10px;
+    width: 10px;
+    border-width: 1px 1px 0 0;
     border-color: #95979c;
     border-style: solid;
     position: relative;
@@ -465,8 +504,8 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     display: inline-block;
     -webkit-transform: rotate(45deg);
     transform: rotate(45deg);
-    height: 15px;
-    width: 15px;
+    height: 10px;
+    width: 10px;
     border-width: 1px 1px 0 0;
     border-color: #95979c;
     border-style: solid;
@@ -474,12 +513,22 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     top: -2px;
     position: absolute;
     right: 15px;
-    top: 35%;
+    top: 40%;
 }
-
+.goDetail .youjt2:after{
+    top: 30%;
+}
 #citysel{width:40%;}
 #areasel{width:30%;}
-.newmestip{position: absolute;top:0.001rem;right:0.4rem;color:#b6b6b6;}
+.newmestip{
+    position: absolute;
+    top:0.22rem;
+    right:0.35rem;
+    height:0.08rem;
+    width:0.08rem;
+    border-radius:50%;
+    background:#e7423e;
+}
 .newmestip b{color:#cd4a47;}
 
 .reply-wrap{
@@ -507,7 +556,9 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
     width: 60%;
     color:#82848a;
     height:100%;
-    line-height:0.49rem;
+    resize:none;
+    line-height:0.2rem;
+    padding-top:0.14rem;
 }
 .reply-txt{
     border-left: 1px solid #e7e7e8;
@@ -561,5 +612,11 @@ article#accounts{background:url(../../static/mine/mine_head_bg@3x.png) no-repeat
 		font-size: 0.17rem;
 		line-height: 0.5rem;
 	}
+    .realname_tip{
+        font-size:0.12rem;
+        color:#999999;
+        text-indent: 1em;
+        margin-top:0.1rem;
+    }
 `
     } < /style>)

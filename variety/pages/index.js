@@ -186,6 +186,17 @@ class Indexnav extends React.Component {
             }
         }
     }
+	componentDidMount() {
+		$.ajax({
+            url: '/user/user/findUserInfo.do',
+            type: 'post',
+            success:function(d){
+               if(d.code == 200){
+               		localStorage.setItem('userid',d.data.id);
+                }
+            }
+        })
+	}
     isLogin(url){
 		
 		$.ajax({
@@ -237,7 +248,7 @@ class Indexnav extends React.Component {
             
                 <a onClick={()=>{this.isLogin('/mobi/mutual/borrow')}}>
                     <div className="icon_div icon_hz"></div>
-                    <div>互助</div>
+                    <div>互助借款</div>
                 </a>
                 
             </div>
@@ -290,15 +301,15 @@ class Indexloan extends React.Component {
             <ul>
                 
                 <li>
-                    <Link href={'/mobi/lend/lend'}><a>
+                    <Link href={'/mobi/pk/hall'}><a>
                     
                         <div className="loan_left">
-                            <div className="loan_div loan_jkyd"></div>
+                            <div className="loan_div loan_qhpk"></div>
                         </div>
                         
                         <div className="loan_con">
-                            <h2>借款有道</h2>
-                            <p>帮助他人，赚些小慧</p>
+                            <h2>期货对决</h2>
+                            <p>{this.props.msg==''?'来一把紧张激烈的对战吧！':this.props.msg}</p>
                         </div>
                         
                         <div className="loan_right arrow">
@@ -312,7 +323,7 @@ class Indexloan extends React.Component {
                     
                 </li>
                 
-                <li>
+             	<li>
                     <Link href={'/mobi/future/view'}><a>
                     
                         <div className="loan_left">
@@ -355,10 +366,11 @@ class Indexbottom extends React.Component {
                 {
                     this.props.data.map((e,i) => {
                         var myImg = e.backgroundImg ? e.backgroundImg : '/static/index_img/pic.png';
+						var myUrl = e.contextType==1 ? '/mobi/index/special/special?a='+e.id : (e.contextType==2?e.context:'/mobi/index/special/special_text?a='+e.id);
 						
                         return(
                             <div key={i} className="bottom_allc">
-                                <Link href={'/mobi/index/special/special?a='+e.id}><a className="bottom_allc_a">
+                                <Link href={myUrl}><a className="bottom_allc_a">
 
                                     <div className="index_mask_all">
                                         <img src={myImg}/>
@@ -394,7 +406,8 @@ class Indexcontent extends React.Component {
         this.state = {
             dataTop : [],
             dataBottom : [],
-			dataBig : ''
+			dataBig : '',
+			msg:''
         };
     }
     componentDidMount(){
@@ -444,6 +457,32 @@ class Indexcontent extends React.Component {
             }.bind(this)
         });
 		
+		$.ajax({
+            type:'get',
+            url:'/game/battle/userBattle.do',
+            data:{},
+            dataType:'json',
+            success:function(d){
+                if(d.code==200){
+					var msg = '';
+					
+					if(d.data){
+						if(d.data.gameStatus == 1){
+							msg = '等待中';
+						}
+						else if(d.data.gameStatus == 2){
+							msg = '对战中';
+						}
+						this.setState({
+							msg : msg
+						});
+					}
+					
+                }
+                
+            }.bind(this)
+        });
+		
     }
     render() {
         return <div className="indexcontent">
@@ -451,17 +490,174 @@ class Indexcontent extends React.Component {
             <Indextop data={this.state.dataTop} />
             <Indexnav />
             <Indexbig data={this.state.dataBig} />
-            <Indexloan />
+            <Indexloan msg={this.state.msg} />
             <Indexbottom data={this.state.dataBottom} />
             
         </div>;
     }
 }
-
-export default  class IndexAll extends React.Component {
-    
-    render() {
+class Indexmask extends React.Component {
+	constructor(props){
+        super(props)
+        this.state = {
+            data:[],
+			btnNum:1,
+			confirm:{
+                show:false,
+				title:'',
+                content:'',
+				yes:''
+            }
+        };
+		this.joinpk = this.joinpk.bind(this);
+		this.confirmNone = this.confirmNone.bind(this);
+		this.confirmNone1 = this.confirmNone1.bind(this);
+    }
+    componentDidMount(){
+		var _this = this;
+		if( _this.props.code && (_this.props.code!='') ){
+			$.ajax({
+				url: '/game/battle/findBattle.do',
+				type: 'get',
+				data: {batchCode:_this.props.code},
+				success:function(d){
+					if(d.code == 200){
+						_this.setState({
+							data:d.data
+						});
+						if( localStorage.getItem('indexMask') != _this.props.code ){
+							$(_this.refs.indexMask).show();
+							localStorage.setItem('indexMask', _this.props.code);
+						}
+						
+					}
+					else{
+						_this.setState({
+							btnNum:1,
+							confirm:{
+								show:true,
+								title:'',
+								content:d.msg,
+								yes:''
+							}
+						});
+					}
+				}
+			});
+		}
+	}
+	joinpk(){
+		var _this = this;
+		var id = _this.state.data.id;
+		var from = (_this.props.isWechat!='') ? 'friend' : 'weibo';
 		
+		$.ajax({
+			url: '/game/battle/joinBattle.do',
+			type: 'post',
+			data: {battleId:id,userFrom:from},
+			success:function(d){
+				if(d.code == 200){
+					$(_this.refs.indexMask).hide();
+					
+					Router.push({
+						pathname: '/mobi/pk/trade',
+						query: {varietyId:d.data.varietyId,battleId:d.data.id,batchCode:d.data.batchCode}
+						       	
+					})
+				}
+				else if(d.code == 2201){
+					$(_this.refs.indexMask).hide();
+					
+					_this.setState({
+						btnNum:2,
+						confirm:{
+							show:true,
+							title:'加入失败',
+							content:'余额不足，请兑换或选择其他赏金较低的对战',
+							yes:'去充值'
+						}
+					});
+				}
+				else{
+					$(_this.refs.indexMask).hide();
+					
+					_this.setState({
+						btnNum:1,
+						confirm:{
+							show:true,
+							title:'',
+							content:d.msg,
+							yes:''
+						}
+					});
+				}
+			}
+		});
+	}
+	confirmNone(){
+		if(this.state.btnNum==2){
+			Router.push({
+			  pathname: '/mobi/bowl/bowl'
+			})
+		}
+		this.setState({
+			btnNum:1,
+			confirm:{
+				show:false,
+				title:'',
+				content:'',
+				yes:''
+			}
+		});
+	}
+	confirmNone1(){
+		this.setState({
+			btnNum:1,
+			confirm:{
+				show:false,
+				title:'',
+				content:'',
+				yes:''
+			}
+		});
+	}
+	render() {
+		var data = this.state.data;
+		var time = '';
+		var pkCode = '';
+		
+		if(data.endline){
+			var json = {1:'现金',2:'元宝',3:'积分'};
+			time = (data.endline/60).toFixed(0)+'分钟';
+			pkCode = data.reward + json[data.coinType];
+		}
+        return <div>
+           
+            <div className="index_mask" ref="indexMask">
+            	<div className="index_mask_content">
+            		<div className="index_mask_top">
+            			<h3>是否加入对战</h3>
+            			<div>对战品种：{data.varietyName?data.varietyName:''}</div>
+            			<div>对战时长：{time}</div>
+            			<div>对战赏金：{pkCode}</div>
+            			<div className="mask_last_p">（加入对战后，赏金将会暂时冻结，对战胜利后返还，失败扣除）</div>
+            		</div>
+            		<div className="index_mask_bottom">
+            			<div className="mask_btn_l" onClick={()=>{$(this.refs.indexMask).hide()}}>我怂了</div>
+            			<div className="mask_btn_r" onClick={this.joinpk}>干一票</div>
+            		</div>
+            	</div>
+            </div>
+            
+            <Confirm type={this.state.btnNum} confirm={this.state.confirm} isOk={this.confirmNone} isNot={this.confirmNone1}/>
+            
+        </div>
+    }
+	
+}
+export default  class IndexAll extends React.Component {
+	
+    render() {
         return <div>
            
             <Header_title text="乐米"/>
@@ -469,8 +665,8 @@ export default  class IndexAll extends React.Component {
             <Indexstyle />
             <Indexcontent />
             <Footer active="index" />
-            <script src="https://s22.cnzz.com/z_stat.php?id=1261979090&web_id=1261979090" language="JavaScript"></script>
-            
+            <Indexmask code={this.props.url.query.code}  isWechat={(this.props.url.query.isWechat==1)?this.props.url.query.isWechat:''} />
+			
         </div>
     }
 }

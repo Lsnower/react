@@ -178,11 +178,11 @@ export default  class  Sline extends React.Component {
             slineMian:function(){
                 var i = chart.create(),
                 e = chart.numbers(),
-                h = "#cd4a47",
+                h = "#222",
                 s = "#3b3738",
                 r = "#3b3738",
-                n = "#869bcb",
-                a = "#b3b3b3",
+                n = props.color?props.color.path : "#222",
+                a = props.color?props.color.text:"#999",
                 o = "#d0402d",
                 l = "#17b03e",
                 c = 5e-4,
@@ -255,7 +255,7 @@ export default  class  Sline extends React.Component {
                                 c = o.priceChartBox.x.end,
                                 b = o.priceChartBox.y.height,
                                 s = o.price.toString().length * 6.5,
-                                len = o.moments.length,
+                                len = o.moments?o.moments.length:0,
                                 _clear = function() {
                                     $.each(u,
                                     function (n,t) {
@@ -277,12 +277,12 @@ export default  class  Sline extends React.Component {
                                     }
                                     _clear();
                                     var _y = (o.beginPrice - _data.current) / (o.beginPrice - o.endPrice) * b;
-                                    u.push(o._line(a, 0, _y, c, _y, h));
-                                    u.push(o._line(a, x, 0, x, b, h));
-                                    u.push(o._rect(a, c - s, _y - 7, 0, s, 15, h));
-                                    u.push(o._text(a, c, _y + 5, _data.current.toFixed(o.scale), '#fff', 'end'));
-                                    u.push(o._rect(a, x - 14, b + 2, 0, 30, 15, h));
-                                    u.push(o._text(a, x + 15, b + 13, j(_), '#fff', 'end'));
+                                    u.push(o._line(a, 0, _y, c, _y, n));
+                                    u.push(o._line(a, x, 0, x, b, n));
+                                    u.push(o._rect(a, c - s, _y - 7, 0, s, 15, n));
+                                    u.push(o._text(a, c, _y + 5, _data.current.toFixed(o.scale), (props.color?props.color.text:'#fff'), 'end'));
+                                    u.push(o._rect(a, x - 14, b + 2, 0, 30, 15, n));
+                                    u.push(o._text(a, x + 15, b + 13, j(_), (props.color?props.color.text:'#fff'), 'end'));
                                 };
                                 o.svg.addEventListener('touchstart',
                                 function(el) {
@@ -323,10 +323,10 @@ export default  class  Sline extends React.Component {
                             l = v.toString().length * 6.5;
 
 
-                       u.push(this._line(a, e, h, c, h, n,"3,3", m));
+                       u.push(this._line(a, e, h, c, h, n,"1,1", m));
                        h = h<7?7:h;
                        u.push(this._rect(a,c-l,h-7,0,l,15,n,m));
-                       u.push(this._text(a,c,h+5,v,'#fff','end',m));
+                       u.push(this._text(a,c,h+5,v,(props.color?props.color.text:'#fff'),'end',m));
 
                     },
                     draw: function (t) {
@@ -367,7 +367,7 @@ export default  class  Sline extends React.Component {
                     _drawFramework: function () {
                         var t = this.cacheEl,
                         e = i.childs(this.gPricesEl)[0];
-                        t.push(this._line(this.gPricesEl, this.priceChartBox.x.begin, this.priceChartBox.y.end, this.priceChartBox.x.end, this.priceChartBox.y.end, '#e7e7e8', "", e))
+                        t.push(this._line(this.gPricesEl, this.priceChartBox.x.begin, this.priceChartBox.y.end, this.priceChartBox.x.end, this.priceChartBox.y.end, (props.color?props.color.line:'#ddd'), "", e))
                         //t.push(this._line(this.gPricesEl, this.priceChartBox.x.end, this.priceChartBox.y.start, this.priceChartBox.x.end, this.priceChartBox.y.end, a, "", e))
 
                     },
@@ -436,13 +436,13 @@ export default  class  Sline extends React.Component {
                             E = C;
                             if(f%2 != 0 ){
                                 var l = (t-_rangePrice*f).toFixed(this.scale);
-                                u.push(this._text(d, D, C - 2, l, "#b3b3b3", "end", m));
-                                u.push(this._line(d, B, C, P, E, "#e7e7e8", "", m));
+                                u.push(this._text(d, D, C - 2, l, (props.color?props.color.text:"#b3b3b3"), "end", m));
+                                u.push(this._line(d, B, C, P, E, (props.color?props.color.line:"#e7e7e8"), "", m));
                             }
                            
                         }
                         var V = this.endPrice.toFixed(this.scale),w = _.end + 3;
-                        u.push(this._text(d, v.end, w, V, "#b3b3b3", "start", m));
+                        u.push(this._text(d, v.end, w, V, (props.color?props.color.text:"#b3b3b3"), "start", m));
 
                     },
                     _drawPath: function () {
@@ -495,7 +495,8 @@ export default  class  Sline extends React.Component {
                     _path: function (t, e) {
                         this.pathEl || (this.pathEl = i.create("path"), this.pathBgEl = i.create("path"), i.attr(this.pathEl, {
                             stroke: n,
-                            fill: "none"
+                            fill: "none",
+                            'stroke-width':0.5
                         }), i.attr(this.pathBgEl, {
                             stroke: "none",
                             fill: n,
@@ -711,13 +712,10 @@ export default  class  Sline extends React.Component {
         o = new u({
             svg: $("#tick-sline")[0]
         });
-        this.setState({
-            sline:o
-        })
+
         n.forEach(function (t) {
             s = t;
-            var j = f(t.time.replace(/-/g,'/'),'hm') ,l = j.substr(0,1);
-            l==0?j=j.substr(1,j.length):j=j;
+            var j = f(t.time.replace(/-/g,'/'),'hm')- 0
             c[j] = {
                 current: t.closePrice - 0,
                 volume: 0,
@@ -725,7 +723,8 @@ export default  class  Sline extends React.Component {
             }
         });
         this.setState({
-            gTime:f(s.time.replace(/-/g,'/'), 'hm') - 0
+            sline:o,
+            gTime:s.time?(f(s.time.replace(/-/g,'/'), 'hm') - 0):0
         })
         w[i.state.code] = c;
         var n = f(new Date().getTime(), "hm") - 0;
@@ -808,8 +807,8 @@ export default  class  Sline extends React.Component {
                         <g></g>
                         <g></g>
                         <g>
-                            <circle className="heartbeat" cx="-10" cy="-10" r="2" fill="#fff" fillOpacity="0.2" stroke="#f05a3c" strokeWidth="0.5"></circle>
-                            <circle className="heartbeat" cx="-10" cy="-10" r="1" fill="#f05a3c" strokeWidth="0"></circle>
+                            <circle className="heartbeat" cx="-10" cy="-10" r="5" fill={this.props.color?this.props.color.path:"#222"} fillOpacity="0.3" ></circle>
+                            <circle className="heartbeat" cx="-10" cy="-10" r="1" fill={this.props.color?this.props.color.path:"#222"} strokeWidth="0"></circle>
                         </g>
                     </svg>
                      <style>{`
@@ -817,11 +816,10 @@ export default  class  Sline extends React.Component {
                     background:#fff;
                 }
                 .hide{ display:none;}
-                 
-                 .mod-sline,.mod-kline{
+                .mod-sline,.mod-kline{
                     height:2rem;
                     width:100%;
-                     -webkit-tap-highlight-color: transparent
+                    -webkit-tap-highlight-color: transparent
                  }
                  .mod-kline text,.mod-lightning text,.mod-sline text {
                     font: 12px Arial;

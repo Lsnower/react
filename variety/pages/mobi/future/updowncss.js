@@ -37,6 +37,7 @@ export default () => ( < style >{ `
 		border-radius: .05rem;
 		box-shadow: 0 0 .05rem rgba(0,0,0,.4);
 		padding:.1rem;
+		position:relative;
 	}
 	.msgboxUp .content p{
 		font-size:.13rem;
@@ -49,6 +50,7 @@ export default () => ( < style >{ `
 		zoom:1;
 		display:flex;
 		display:-webkit-flex;
+		padding-bottom:.5rem;
 	}
 	.msgboxUp .content .box div{
 		flex:1;
@@ -62,29 +64,33 @@ export default () => ( < style >{ `
 		text-align:center;
 		line-height:.6rem;
 		color:#fff;
-
+		font-size:.14rem;
 	}
 	.msgboxUp .content div span.thigh{
-		background:#cd4a47;
+		background:#ef6d6a;
 		float:right;
 		margin-right:.1rem;
 	}
 	.msgboxUp .content div span.tlow{
-		background:#33d37e;
+		background:#2ecc9f;
 		float:left;
 		margin-left:.1rem;
 	}
 
 	.rule{
 		clear:both;
-		line-height:.5rem;                    
+		line-height:.45rem;                    
 		text-align:center;
+		background:#f5f5f5;
+		position:absolute;
+		width:100%;
+		bottom:0;
+		left:0;
+		right:0;
+		border-radius:0 0 .05rem .05rem;
 	}
 	.rule span{
-		color:#869bcb;
+		color:#666;
 		font-size:.12rem;
-		background:url(/static/future/shares_popovers_icon_rule.png) left center no-repeat;
-		padding-left:.15rem;
-		background-size: 22%;
 	}
 ` }</style>)

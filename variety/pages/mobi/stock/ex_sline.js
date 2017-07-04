@@ -178,13 +178,13 @@ export default  class  Sline extends React.Component {
             slineMian:function(){
                 var i = chart.create(),
                 e = chart.numbers(),
-                h = "#cd4a47",
-                s = "#e7e7e8",
-                r = "#e7e7e8",
-                n = "#869bcb",
-                a = "#b3b3b3",
-                o = "#cd4a47",
-                l = "#33d37e",
+                h = "#222",
+                s = "#ddd",
+                r = "#ddd",
+                n = "#222",
+                a = "#999",
+                o = "#ef6d6a",
+                l = "#2ecc9f",
                 c = 5e-4,
                 u = .005,
                 m = 2e-4,
@@ -371,8 +371,6 @@ export default  class  Sline extends React.Component {
                         var t = this.cacheEl,
                         e = i.childs(this.gPricesEl)[0];
                         t.push(this._line(this.gPricesEl, this.priceChartBox.x.begin, this.priceChartBox.y.end, this.priceChartBox.x.end, this.priceChartBox.y.end, '#e7e7e8', "", e)),
-                        t.push(this._line(this.gVolumesEl, this.volumeChartBox.x.begin, this.volumeChartBox.y.begin, this.volumeChartBox.x.end, this.volumeChartBox.y.begin, s)),
-                        t.push(this._line(this.gVolumesEl, this.volumeChartBox.x.begin, this.volumeChartBox.y.begin + this.volumeChartBox.y.height / 2, this.volumeChartBox.x.end, this.volumeChartBox.y.begin + this.volumeChartBox.y.height / 2)),
                         t.push(this._line(this.gVolumesEl, this.volumeChartBox.x.begin, this.volumeChartBox.y.end - .5, this.volumeChartBox.x.end, this.volumeChartBox.y.end - .5))
 
                     },
@@ -425,16 +423,19 @@ export default  class  Sline extends React.Component {
                         y = v.end - 3,
                         w = _.begin + (_.height / 2 - 10),
                         V = chart.numbers().shrink(this.maxVolume);
-                        n.push(this._text(d, y, w, V, "", "end"))
                     },
                     _drawPriceLine: function () {
-                        var t = this.maxPrice,
-                        i = this.minPrice;
-                        t += this.maxPrice* g,
-                        i -= this.maxPrice* g,
-                        this.beginPrice = t,
-                        this.endPrice = i;
-                        var _rangePrice = (t - i)/p;
+                         var t = this.maxPrice,
+                        i = this.minPrice,
+                        c = parseFloat(this.close),
+                        ma = Math.abs(t - c),
+                        mi = Math.abs(i - c)
+                        r = ma>mi;
+                        this.beginPrice = r?c+ma:c+mi,
+                        this.endPrice = r?c-ma:c-mi;
+                        this.beginPrice += .02,
+                        this.endPrice -= .02;
+                        var _rangePrice = (this.beginPrice - this.endPrice)/p;
                         for (var u = this.cacheEl,
                         m = this.pathBgEl,
                         d = this.gPricesEl,
@@ -448,26 +449,26 @@ export default  class  Sline extends React.Component {
                             D = P,
                             E = C;
                             if(f%2 != 0 ){
-                                var l = (t-_rangePrice*f).toFixed(this.scale);
+                                var l = (this.beginPrice-_rangePrice*f).toFixed(this.scale);
                                 u.push(this._text(d, D, C - 2, l, "#b3b3b3", "end", m));
                                 u.push(this._line(d, B, C, P, E, "#e7e7e8", "", m));
                             }
                            
                         }
-                        var V = this.endPrice.toFixed(this.scale),w = _.end + 3,s=this.close-0;
-                        u.push(this._text(d, v.end, w, V, "#b3b3b3", "end", m));
-                        var y, w, V, T = this.beginPrice - this.endPrice,
-                        M = this.beginPrice - s,
-                        B = v.begin,
-                        C = _.begin + _.height * (M / T),
-                        C = 0 > C ? -1e3 : C > _.height ? 1e3 : C;
-                        P = v.end,
-                        E = C,
-                        u.push(this._line(d, B, C, P, E, h, "3,3", m)),
-                        s <= this.minPrice ? (w = C + 14, w = w >= _.height - b ? C - 4 : w) : s >= this.maxPrice ? (w = C - 4, w = b >= w ? C + 14 : w) : w = C + (C < _.height / 2 ? 14 : -4),
-                        y = v.begin + 3,
-                        V = "0.00%  "+s.toFixed(this.scale), s.toFixed(this.scale),
-                        u.push(this._text(d, y, w, V, "", "start", m))
+                        // var V = this.endPrice.toFixed(this.scale),w = _.end + 3,s=this.close-0;
+                        // u.push(this._text(d, v.end, w, V, "#b3b3b3", "end", m));
+                        // var y, w, V, T = this.beginPrice - this.endPrice,
+                        // M = this.beginPrice - s,
+                        // B = v.begin,
+                        // C = _.begin + _.height * (M / T),
+                        // C = 0 > C ? -1e3 : C > _.height ? 1e3 : C;
+                        // P = v.end,
+                        // E = C,
+                        // u.push(this._line(d, B, C, P, E, h, "3,3", m)),
+                        // s <= this.minPrice ? (w = C + 14, w = w >= _.height - b ? C - 4 : w) : s >= this.maxPrice ? (w = C - 4, w = b >= w ? C + 14 : w) : w = C + (C < _.height / 2 ? 14 : -4),
+                        // y = v.begin + 3,
+                        // V = s.toFixed(this.scale), s.toFixed(this.scale),
+                        // u.push(this._text(d, y, w, V, "", "start", m))
 
                     },
                     _drawPath: function () {
@@ -543,15 +544,15 @@ export default  class  Sline extends React.Component {
                             var p = B[t];
 
                             if (null != p) {
-                                var v = i ? i.volume : 0;
+                                var v = i ? i.current : 0;
                                 e = 0 === g ? .5 : g === x ? c.end - .5 : b(g),
-                                h = f(p.volume),
+                                h = f(p.volume)||u.end - 1,
                                 s = e,
                                 r = u.end - 1,
-                                n = p.volume >= v ? o : l,
+                                n = p.current >= v ? o : l,
                                 null == i && (n = p.current >= a.close ? o : l),
                                 d.push(a._line(m, e, h, s, r, n,'','',0.1)),
-                                i = p
+                                i = p;
                             }
                         })
                     },
@@ -787,41 +788,35 @@ export default  class  Sline extends React.Component {
             sline:o
         })
         var j = 930,_volume=0;
-        n.forEach(function (t,i) {
-            if(!i)return;
+       n.forEach(function (t,k) {
+            if(!k)return;
             s = t;
-            j==1130?j=1301:j++;
-            var x = j.toString(),a = x.substr(0,x.length-2),l = x.substr(x.length-2,x.length);
-            l>59?a=((a-0)+1).toString():a=a;
-            l>59?l='00':l=l;
-            j = parseInt(a+l);
-            s.time = j;
+           
+            s.time = f(t.time, "hm");
+            i.newData.gVolume+=t.nowVolume;
 
-            var amount = t.business_amount - _volume;
-            _volume = t.business_amount;
-            c[j] = {
-                current: t.last_price - 0,
-                volume: amount,
-                time: j
+            c[s.time] = {
+                current: t.closePrice - 0,
+                volume: t.nowVolume,
+                time:  s.time- 0
             }
         });
-        this.newData.gTime=s.time;
-        this.newData.gVolume=s.business_amount;
+        this.newData.gTime = s.time;
         w[i.state.code] = c;
         var n = f(new Date().getTime(), "hm") - 0;
         var u =function(){
             var t = i.state.data;
-            o.draw({
+             o.draw({
                 data: c,
                 quoteTime: n,
-                open: t.open_price,
-                close: t.prev_price,
-                limitUp: t.high_price,
-                limitDown: t.low_price,
+                open: t.openPrice,
+                close: t.preClsPrice,
+                limitUp: t.highestPrice,
+                limitDown: t.lowestPrice,
                 period: i.initPeriod(),
                 scale: i.state.scale,
                 code: i.state.code,
-                price:t.last_price
+                price:t.lastPrice
             })
         },
         l = function(){
@@ -829,36 +824,33 @@ export default  class  Sline extends React.Component {
         };
         l();
     }
-    updateSline(){
+     updateSline(){
        
         var _this = this,t = this.state.data,o=this.state.sline;
 
         if (null != t && o) {
-
             var i = {
-                    current: t.last_price,
-                    volume: 0,
-                    time:_this.state.chart.dates().format(new Date().getTime(), "hm") - 0 + ""
+                    current: t.lastPrice,
+                    volume: t.volume-_this.newData.gVolume,
+                    time:_this.state.chart.dates().format(t.upTime, "hm") - 0 + ""
                 };
             if(i.time>1500){return false}
+            this.newData.gVolume = t.volume;
             if (i.time - 0 !== this.newData.gTime){
                 if (null == t[i.time] && i.time - 1 !== this.newData.gTime) {
                     var n = t[i.time - 1];
                 }
-
-                i.volume = t.business_amount - this.newData.gVolume;
-                this.newData.gVolume = t.business_amount
-
+   
                 o.perDraw(i, {
                     quoteTime: i.time - 0,
-                    open: t.open_price-0,
-                    close: t.prev_price-0,
-                    limitUp: t.high_price,
-                    limitDown: t.low_price,
+                    open: t.openPrice-0,
+                    close: t.preClsPrice-0,
+                    limitUp: t.highestPrice,
+                    limitDown: t.lowestPrice,
                     scale: _this.state.scale,
                     code: _this.state.code,
                     period:_this.initPeriod(),
-                    price:(t.last_price-0).toFixed(_this.state.scale)
+                    price:(t.lastPrice-0).toFixed(_this.state.scale)
                 })
             }
         }
@@ -870,12 +862,12 @@ export default  class  Sline extends React.Component {
         
        this.serverRequest = $.ajax({
             type:'get',
-            url:' /stock/trend',
-            data:{stock_code:code},
+            url:'/stk/stk/trend.do',
+            data:{code:code},
             dataType:'json',
             success:function(d){
-                if(d.result[0]){
-                    _this.sline(d.result[0].data);
+                if(d.data){
+                    _this.sline(d.data);
                 }else{
                      _this.setState({
                         alert:true
@@ -899,8 +891,8 @@ export default  class  Sline extends React.Component {
                         <g></g>
                         <g></g>
                         <g>
-                            <circle className="heartbeat" cx="-10" cy="-10" r="2" fill="#fff" fillOpacity="0.2" stroke="#f05a3c" strokeWidth="0.5"></circle>
-                            <circle className="heartbeat" cx="-10" cy="-10" r="1" fill="#f05a3c" strokeWidth="0"></circle>
+                            <circle className="heartbeat" cx="-10" cy="-10" r="5" fill="#222" fillOpacity="0.3"></circle>
+                            <circle className="heartbeat" cx="-10" cy="-10" r="2" fill="#222" strokeWidth="0"></circle>
                         </g>
                     </svg>
                     

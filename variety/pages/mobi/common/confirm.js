@@ -4,20 +4,22 @@ class Confirm extends React.Component{
         super(props)
         this.cancle = this.cancle.bind(this);
         this.canOk = this.canOk.bind(this);
-       
         this.state={
             show:props.confirm.show,
             type:props.confirm.type
         }
     }
     componentWillReceiveProps(nextProps){
+
          this.setState({
             show:nextProps.confirm.show
         })
     }
     cancle(e,f){
-        if(this.props.isNot){
-            this.props.isNot(e,this.props.confirm)
+        if(this.props.isNot||this.props.confirm.isNot){
+            var _callback = this.props.isNot||this.props.confirm.isNot;
+
+            _callback(e,this.props.confirm)
         }
         
         this.setState({
@@ -37,16 +39,22 @@ class Confirm extends React.Component{
         if(this.props.confirm.code == 702){
             Router.back();
         }
-        if(this.props.isOk){
-             this.props.isOk(e,this.props.confirm);
+        if(this.props.isOk || this.props.confirm.isOk){
+            var callback = this.props.isOk ||this.props.confirm.isOk;
+             callback(e,this.props.confirm);
         }
        this.setState({
             show:false
+
         })
          return false;
     }
     render(){
-        var btns = this.props.type==2? <div className="btn btn-left no" onClick={(e)=>{this.cancle()}}>取消</div>:'';
+		
+        var a,b;
+        a = (this.props.no||this.props.confirm.no) ? (this.props.no||this.props.confirm.no) : '取消';
+        b = (this.props.yes||this.props.confirm.yes) ? (this.props.yes||this.props.confirm.yes) : '确定';
+        var btns = (this.props.type||this.props.confirm.type)==2? <div className="btn btn-left no" onClick={(e)=>{this.cancle()}}>{a}</div>:'';
         return (
             <div>
                 <section className={this.state.show?"show":"none"}>
@@ -59,7 +67,7 @@ class Confirm extends React.Component{
                             </div>
                             <div className="action clearfix">
                                 {btns}
-                                <div className="btn btn-right ok" onClick={(e)=>{this.canOk()}}>确定</div>
+                                <div className="btn btn-right ok" onClick={(e)=>{this.canOk()}}>{b}</div>
                             </div>
                         </div>
                     </div>

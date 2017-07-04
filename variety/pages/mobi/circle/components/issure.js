@@ -11,7 +11,8 @@ import Userinfo from './userInfo.js';
 import Issure_con from './issure_con.js';
 import Confirm from '../../common/confirm.js';
 import Text_none from '../../common/text_none.js';
-
+import Type from '../../common/type.js'
+import Router from 'next/router';
 
 class Issure extends React.Component{
     constructor(props) {
@@ -25,6 +26,8 @@ class Issure extends React.Component{
                 bigHeight:500
             }
         this.toLoadView = this.toLoadView.bind(this);
+		this.hanleTrade = this.hanleTrade.bind(this);
+		this.hanleTradeNone = this.hanleTradeNone.bind(this);
     }
     componentDidMount(){
         var t = this,userId = t.props.url.query.userId;
@@ -77,25 +80,37 @@ class Issure extends React.Component{
             }
         })
     }
+	hanleTrade(onoff){
+        this.setState({
+            trade:onoff
+        })
+    }
+	hanleTradeNone(){
+		this.setState({
+            trade:false
+        })
+	}
+	detail(myId){
+		Router.push({
+			pathname: '/mobi/circle/components/service_detail',
+			query: {viewpointId:myId,type:'detail',fb:'true'}
+		})
+	}
     render(){
         if(this.state.viewData.length>0){
             return(
                 <div>
                     <Header_title text="发表"/>
-                    <Header text={this.props.url.query.type == 'TA'?"TA的发表":"我的发表"}/>
+                    <Header text={this.props.url.query.type == 'TA'?"TA的发表":"我的发表"} messg={this.props.url.query.type=='TA'?"fasle":"true"} messClick={this.hanleTrade} />
                     <ul className="finance">
                         <InfiniteScroll next={this.toLoadView} height={this.state.bigHeight} hasMore={this.state.viewMore} loader={ <div className="view-bottom">加载更多</div>} endMessage={<div className="view-bottom">已加载全部</div>}>
                         {
                             this.state.viewData.map((e,i) => {
                                 return (
                                     <div>
-                                        <li>
-                                            <Userinfo user={e} isLogin={this.state.isLogin} query='detail'/>
-                                            <Issure_con info={e} varietyDate={e} url={this.props.url}/>
-                                            <div className="like-wrap">
-                                                <span className="like discuss">{e.replyCount?(e.replyCount>999?'999+':e.replyCount):'0'}</span>
-                                                <span className="like haslike colorR">{e.praiseCount?(e.praiseCount>999?'999+':e.praiseCount):'0'}</span>
-                                            </div>
+                                        <li onClick={()=>this.detail(e.id)}>
+                                            <Userinfo user={e} isLogin={this.state.isLogin} query='detail' myfb='true'/>
+                                            <Issure_con info={e} varietyDate={e} url={this.props.url} fb="true"/>
                                         </li>
                                     </div> 
                                 )
@@ -104,9 +119,12 @@ class Issure extends React.Component{
                         }
                         </InfiniteScroll>
                     </ul>
+                    
+                    <Type show={this.state.trade} callback={this.hanleTradeNone} type={2}/>
+                    
                     <Confirm type={1} confirm={this.state} />
                     <style jsx global>{`
-                      html,body{background: #e7e7e8;}  
+                      html,body{background: #f5f5f5;}  
                     `}</style>
                     <style jsx>{`
                         .finance {
@@ -115,7 +133,10 @@ class Issure extends React.Component{
                         .finance li{
                             padding: .1rem .13rem;
                             background: #fff;
-                            margin-bottom: .13rem;
+                            margin-top: .13rem;
+							padding-bottom: 0.53rem;
+							border-bottom: 1px solid #ddd;
+							border-top: 1px solid #ddd;
                         }
                         .like-wrap{
                             position: relative;
@@ -143,7 +164,6 @@ class Issure extends React.Component{
                             background-size: 26%;
 
                         }
-                    
                     `}</style>
                 </div>
             )
@@ -151,8 +171,9 @@ class Issure extends React.Component{
             return(
                 <div>
                     <Header_title text="发表"/>
-                    <Header text={this.props.url.query.type == 'TA'?"TA的发表":"我的发表"}/>
+                    <Header text={this.props.url.query.type == 'TA'?"TA的发表":"我的发表"} messg={this.props.url.query.type=='TA'?"fasle":"true"} messClick={this.hanleTrade} />
                     <Text_none text=""/>
+                    <Type show={this.state.trade} callback={this.hanleTradeNone} type={2}/>
                 </div>
             )
         }

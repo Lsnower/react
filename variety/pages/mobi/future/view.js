@@ -82,7 +82,7 @@ class View extends React.Component{
                     <Header_title text='观点大神'/>    
                     <Head text="观点大神" />
                     <ul className="top">
-                        <li style={{flex:1.2}}>观点大神</li>
+                        <li className='frist'>观点大神</li>
                         <li>擅长类型</li>
                         <li>看盘准确率</li>
                     </ul>
@@ -92,11 +92,10 @@ class View extends React.Component{
                             this.state.data.map((e,i)=>{
                                 var passRat = Number(e.passRat)*100;
                                 return (
-                                    <li className="list" key={i}>
-                                        <img src={e.userPortrait?e.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':"/static/circle/headportrait64x64@3x.png"} onClick={()=>{this.handler(e.userId?e.userId:'')}}/>
-                                        <span className="userInfo">{e.userName?e.userName:'-'}</span>
-                                        <span className="colorR">{e.adeptType?adeptType[e.adeptType]:'-'}</span>
-                                        <span className="colorR">{e.passRat?(parseInt(passRat) == passRat?(passRat+'%'):passRat.toFixed(2)+'%'):'0'}</span>
+                                    <li className="list" key={i} onClick={()=>{this.handler(e.userId?e.userId:'')}}>
+                                        <span className="userInfo"><img src={e.userPortrait?e.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':"/static/circle/headportrait64x64@3x.png"} />{e.userName?e.userName:'-'}</span>
+                                        <span>{e.adeptType?adeptType[e.adeptType]:'-'}</span>
+                                        <span>{e.passRat?(parseInt(passRat) == passRat?(passRat+'%'):passRat.toFixed(0)+'%'):'0'}</span>
                                     </li>
                                 )
                             })
@@ -106,46 +105,65 @@ class View extends React.Component{
                         <Confirm type={2} confirm={this.state} />
                     </div>
                     <style jsx>{`
+                        body{
+                            background:#f5f5f5;
+                        }
                         ul.top{
                             width: 100%;
                             display: flex;
-                            margin-top: .1rem;
-                            background: #fff;
-                            border-bottom: .01rem solid #f0efef;
+                            background: #f5f5f5;
+                            border-bottom: .01rem solid #ddd;
+                            padding:0 .1rem;
+
                         }
                         ul.top li {
                             flex: 1;
                             text-align: left;
-                            padding-left: .12rem;
-                            font-size: .14rem;
-                            color: #82848a;
-                            line-height: .36rem;
+                            font-size: .1rem;
+                            color: #999;
+                            line-height: .32rem;
+                            text-align:right;
+                        }
+                        ul.top li.frist{
+                            flex:2;
+                            -webkit-flex:2;
+                            text-align:left;
                         }
                         ul li.list{
                             width: 100%;
                             display: -webkit-flex;
                             display: flex;
-                            display: -webkit-inline-flex;
-                            display: inline-flex;
                             height: .6rem;
                             line-height: .6rem;
-                            border-bottom: .01rem solid #f0efef;
+                            border-bottom: .01rem solid #ddd;
+                            padding:0 .1rem;
+                            background:#fff;
                         }
                         li.list span{
                             flex: 1;
                             -webkit-flex: 1;
                             display: block;
-                            font-size: .16rem;
-                            padding: 0 .1rem;
+                            font-size: .1rem;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
+                            color:#666;
+                            text-align:right;
+                        }
+                        li.list .userInfo{
+                            flex:2;
+                            -webkit-flex:2;
+                            color:#222;
+                            font-size: .16rem;
+                            text-align:left;
                         }
                         li.list img{
-                            height: .34rem;
-                            width: .34rem;
+                            height: .32rem;
+                            width: .32rem;
+                            border-radius:.16rem;
                             display: inline-block;
-                            margin: .14rem 0 0 .12rem;
+                            vertical-align: middle;
+                            margin-right:.05rem;
 
                         }
                     `}</style>

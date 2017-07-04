@@ -8,15 +8,29 @@ import Header from '../../common/header/header_left.js';
 import Confirm from '../../common/confirm.js';
 import Style from './approvecss.js';
 
+export default class Approve extends Component{
+	 constructor(props) {
+        super(props);
+    }
+     render() {
+        return (<div>
+		        <Header_title text="实名认证"/>
+		        <Header text="实名认证" />
+		        <Style/>
+		        <Edite  id={this.props.url.query.id}/>
+		    </div>
+		)
+    }
+} 
 
 
-class Edite extends Component {
+ class Edite extends Component {
     constructor(props) {
         super(props)
         this.state = {
             userimgY: null,
 			userimgN: null,
-			input1: null,
+			input1:null,
 			input2:null,
 			confirm:{
                 show:false,
@@ -32,10 +46,14 @@ class Edite extends Component {
 		this.confirmation = this.confirmation.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.removeInput = this.removeInput.bind(this);
-		
+		this.historyUser = this.historyUser.bind(this);
+        this.selectFileImage = this.selectFileImage.bind(this);
     }
 	componentDidMount(){
-        this.init()
+        this.init();
+        if(this.props.id){
+        	this.historyUser()
+        }
 	}
 	init(){
 		
@@ -46,246 +64,195 @@ class Edite extends Component {
             dataType:'json',
             success:function(d){
                 if(d.code==200){
+
 					if(d.data){
 						if( (d.data.status==0) || d.data.status ){
 							
-							$(this.refs.mask).show();
-							$(this.refs.input1).css('color','#b3b3b3');
-							$(this.refs.input2).css('color','#b3b3b3');
-							
-							d.data.status==0 ? $(this.refs.btn_submit).html('审核中') : $(this.refs.btn_submit).hide();
-							
-							$(this.refs.input1).val(d.data.realName);
-							$(this.refs.input2).val(d.data.certCode);
-							
-							this.setState({
-								userimgY: d.data.certPositive,
-								userimgN: d.data.certBack
-							});
+							if (d.data.status==0) {
+								$(this.refs.mask).show();
+								$(this.refs.btn_submit).html('审核中');
+								$(this.refs.input1).val(d.data.realName);
+								$(this.refs.input2).val(d.data.certCode);
+								this.setState({
+									userimgY: d.data.certPositive,
+									userimgN: d.data.certBack
+								});
+							}else if(d.data.status==1) {
+								$(this.refs.mask).show();
+								$(this.refs.btn_submit).hide() && $(this.refs.userImg).hide() && $(this.refs.certified).show() && $(this.refs.user_userimg).hide();
+								$(this.refs.certified).parent().css('margin-top','0');
+								var str = ''
+								for(var i=0;i<(d.data.realName.length-1);i++){
+									str += '*'
+								}
+								$(this.refs.input1).val(d.data.realName.substring(0,1)+str);
+								
+								$(this.refs.input2).val(d.data.certCode.replace(d.data.certCode.substring(4,16),'************'));
+							}else{
+								$(this.refs.btn_submit).html('重新提交');
+								$(this.refs.input1).val(d.data.realName);
+								$(this.refs.input2).val(d.data.certCode);
+								this.setState({
+									input1:d.data.realName,
+									input2:d.data.certCode,
+									userimgY: d.data.certPositive,
+									userimgN: d.data.certBack
+								});
+							}
 						}
-						
 					}
                 }
             }.bind(this)
         });
 	}
-	updatePic(judge){
+	historyUser(){
+		var _this=this;
+		$.ajax({
+            type:'get',
+            url:'/user/user/queryCertification.do',
+            data:{id:_this.props.id},
+            dataType:'json',
+            success:function(d){
+            	if(d.code==200){
+					if(d.data){
+						if( (d.data.status==0) || d.data.status ){
 
-        var that = this;
+							if (d.data.status==0) {
+								$(_this.refs.mask).show();
+								$(_this.refs.input1).val(d.data.realName);
 
-		var u = new UploadPic();
-		function UploadPic() {
-			that.sw = 0;
-			that.sh = 0;
-			that.tw = 0;
-			that.th = 0;
-			that.scale = 0;
-			that.maxWidth = 0;
-			that.maxHeight = 0;
-			that.maxSize = 0;
-			that.fileSize = 0;
-			that.fileDate = null;
-			that.fileType = '';
-			that.fileName = '';
-			that.input = null;
-			that.canvas = null;
-			that.mime = {};
-			that.type = '';
-			that.callback = function () {};
-			that.loading = function () {};
-		}
-
-		UploadPic.prototype.init = function (options) {
-			options
-			this.maxWidth = options.maxWidth || 800;
-			this.maxHeight = options.maxHeight || 600;
-			this.maxSize = options.maxSize || 3 * 1024 * 1024;
-			this.input = options.input;
-			this.mime = {'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'bmp': 'image/bmp'};
-			this.callback = options.callback || function () {};
-			this.loading = options.loading || function () {};
-
-			this._addEvent();
-		};
-
-		/**
-		 * @description 绑定事件
-		 * @param {Object} elm 元素
-		 * @param {Function} fn 绑定函数
-		 */
-		UploadPic.prototype._addEvent = function () {
-			var _this = this;
-
-			function tmpSelectFile(ev) {
-				_this._handelSelectFile(ev);
-			}
-
-			this.input.addEventListener('change', tmpSelectFile, false);
-		};
-
-		/**
-		 * @description 绑定事件
-		 * @param {Object} elm 元素
-		 * @param {Function} fn 绑定函数
-		 */
-		UploadPic.prototype._handelSelectFile = function (ev) {
-			var file = ev.target.files[0];
-
-			this.type = file.type
-
-			// 如果没有文件类型，则通过后缀名判断（解决微信及360浏览器无法获取图片类型问题）
-			if (!this.type) {
-				this.type = this.mime[file.name.match(/\.([^\.]+)$/i)[1]];
-			}
-
-			if (!/image.(png|jpg|jpeg|bmp)/.test(this.type)) {
-				alert('选择的文件类型不是图片');
-				return;
-			}
-
-			if (file.size > this.maxSize) {
-				alert('选择文件大于' + this.maxSize / 1024 / 1024 + 'M，请重新选择');
-				return;
-			}
-
-			this.fileName = file.name;
-			this.fileSize = file.size;
-			this.fileType = this.type;
-			this.fileDate = file.lastModifiedDate;
-
-			this._readImage(file);
-		};
-
-		/**
-		 * @description 读取图片文件
-		 * @param {Object} image 图片文件
-		 */
-		UploadPic.prototype._readImage = function (file) {
-			var _this = this;
-
-			function tmpCreateImage(uri) {
-				_this._createImage(uri);
-			}
-
-			this.loading();
-
-			this._getURI(file, tmpCreateImage);
-		};
-
-		/**
-		 * @description 通过文件获得URI
-		 * @param {Object} file 文件
-		 * @param {Function} callback 回调函数，返回文件对应URI
-		 * return {Bool} 返回false
-		 */
-		UploadPic.prototype._getURI = function (file, callback) {
-			var reader = new FileReader();
-			var _this = this;
-
-			function tmpLoad() {
-				// 头不带图片格式，需填写格式
-				var re = /^data:base64,/;
-				var ret = this.result + '';
-
-				if (re.test(ret)) ret = ret.replace(re, 'data:' + _this.mime[_this.fileType] + ';base64,');
-
-				callback && callback(ret);
-			}
-
-			reader.onload = tmpLoad;
-
-			reader.readAsDataURL(file);
-
-			return false;
-		};
-
-		/**
-		 * @description 创建图片
-		 * @param {Object} image 图片文件
-		 */
-		UploadPic.prototype._createImage = function (uri) {
-			var img = new Image();
-			var _this = this;
-
-			function tmpLoad() {
-				_this._drawImage(this);
-			}
-
-			img.onload = tmpLoad;
-
-			img.src = uri;
-		};
-
-		/**
-		 * @description 创建Canvas将图片画至其中，并获得压缩后的文件
-		 * @param {Object} img 图片文件
-		 * @param {Number} width 图片最大宽度
-		 * @param {Number} height 图片最大高度
-		 * @param {Function} callback 回调函数，参数为图片base64编码
-		 * return {Object} 返回压缩后的图片
-		 */
-		UploadPic.prototype._drawImage = function (img, callback) {
-			this.sw = img.width;
-			this.sh = img.height;
-			this.tw = img.width;
-			this.th = img.height;
-
-			this.scale = (this.tw / this.th).toFixed(2);
-
-			if (this.sw > this.maxWidth) {
-				this.sw = this.maxWidth;
-				this.sh = Math.round(this.sw / this.scale);
-			}
-
-			if (this.sh > this.maxHeight) {
-				this.sh = this.maxHeight;
-				this.sw = Math.round(this.sh * this.scale);
-			}
-
-			this.canvas = document.createElement('canvas');
-			var ctx = this.canvas.getContext('2d');
-
-			this.canvas.width = this.sw;
-			this.canvas.height = this.sh;
-
-			ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, this.sw, this.sh);
-
-			this.callback(this.canvas.toDataURL(this.type));
-
-			ctx.clearRect(0, 0, this.tw, this.th);
-			this.canvas.width = 0;
-			this.canvas.height = 0;
-			this.canvas = null;
-		};
-		
-		
-		var str = judge == 0 ? '.sfz_z' : '.sfz_f';
-		
-		u.init({
-			input: document.querySelector(str),
-			callback: function (base64) {
-				var re = /,/;
-				var num = base64.search(re)+1;
-				var str = '';
-				str = base64.substr(num);
-				$.ajax({
-					url:"/user/user/upload.do",
-					data:{picture:str},
-					type:'post',
-					dataType:'json',
-					success:function(i){
-						if(i.code == 200){
-							judge == 0 ? that.setState({ userimgY:i.data }) :  that.setState({ userimgN:i.data });
+								$(_this.refs.input2).val(d.data.certCode);
+								_this.setState({
+									userimgY: d.data.certPositive,
+									userimgN: d.data.certBack
+								});
+							}else if(d.data.status==1) {
+								$(_this.refs.mask).show();
+								$(_this.refs.btn_submit).hide() && $(_this.refs.userImg).hide() && $(_this.refs.certified).show() && $(_this.refs.user_userimg).hide();
+								$(_this.refs.certified).parent().css('margin-top','0');
+								var str = ''
+								for(var i=0;i<(d.data.realName.length-1);i++){
+									str += '*'
+								}
+								$(_this.refs.input1).val(d.data.realName.substring(0,1)+str);
+								
+								$(_this.refs.input2).val(d.data.certCode.replace(d.data.certCode.substring(4,16),'************'));
+							}else{
+								$(_this.refs.input1).val(d.data.realName);
+								$(_this.refs.input2).val(d.data.certCode);
+								_this.setState({
+									input1:d.data.realName,
+									input2:d.data.certCode,
+									userimgY: d.data.certPositive,
+									userimgN: d.data.certBack
+								});
+							}
 						}
 					}
-				})
-			}
-		});
+                }
+        }
+    })
 		
-
 	}
+     
+     selectFileImage(judge) {
+        //var file = fileObj.files['0'];
+        var file = this.refs[judge].files['0'];
+        //图片方向角 added by lzk
+        var Orientation = null;
+        var that = this;
+        if (file) {
+            var rFilter = /^(image\/jpeg|image\/png)$/i; // 检查图片格式
+            var maxSize = 50 * 1024 * 1024;
+            if (!rFilter.test(file.type)) {
+                alert("请选择jpeg、png格式的图片", false);
+                return;
+            }
+            if (file.size > maxSize) {
+				alert('选择文件大于' + maxSize / 1024 / 1024 + 'M，请重新选择');
+				return;
+			}
+            // var URL = URL || webkitURL;
+            //获取照片方向角属性，用户旋转控制
+            EXIF.getData(file, function() {
+                EXIF.getAllTags(this);
+                Orientation = EXIF.getTag(this, 'Orientation');
+            });
+
+            var oReader = new FileReader();
+            oReader.onload = function(e) {
+                //var blob = URL.createObjectURL(file);
+                //_compress(blob, file, basePath);
+                var image = new Image();
+                image.src = e.target.result;
+                image.onload = function() {
+                    var expectWidth = this.naturalWidth;
+                    var expectHeight = this.naturalHeight;
+
+                    if (this.naturalWidth > this.naturalHeight && this.naturalWidth > 300) {
+                        expectWidth = 300;
+                        expectHeight = expectWidth * this.naturalHeight / this.naturalWidth;
+                    } else if (this.naturalHeight > this.naturalWidth && this.naturalHeight > 400) {
+                        expectHeight = 400;
+                        expectWidth = expectHeight * this.naturalWidth / this.naturalHeight;
+                    }
+                    var canvas = document.createElement("canvas");
+                    var ctx = canvas.getContext("2d");
+                    canvas.width = expectWidth;
+                    canvas.height = expectHeight;
+                    ctx.drawImage(this, 0, 0, expectWidth, expectHeight);
+                    var base64 = null;
+                    //修复ios
+                    if (navigator.userAgent.match(/iphone/i)) {
+                        //如果方向角不为1，都需要进行旋转 added by lzk
+                        if(Orientation != "" && Orientation != 1){
+                            switch(Orientation){
+                                case 6://需要顺时针（向左）90度旋转
+                                    ctx.rotate(90 * Math.PI / 180);
+                                    ctx.drawImage(this,0,-expectWidth,expectHeight,expectWidth);
+                                    break;
+                                case 8://需要逆时针（向右）90度旋转
+                                    ctx.rotate(270 * Math.PI / 180);
+                                    ctx.drawImage(this,-expectHeight,0,expectHeight,expectWidth);
+                                    break;
+                                case 3://需要180度旋转
+                                    ctx.rotate(180 * Math.PI / 180);
+                                    ctx.drawImage(this,-expectWidth,-expectHeight,expectWidth,expectHeight);
+                                    break;
+                            }
+                        }
+
+                        /*var mpImg = new MegaPixImage(image);
+                        mpImg.render(canvas, {
+                            maxWidth: 800,
+                            maxHeight: 1200,
+                            quality: 0.8,
+                            orientation: 8
+                        });*/
+                        
+                    }
+                    base64 = canvas.toDataURL("image/png", 0.8);
+                    var re = /,/;
+                    var num = base64.search(re)+1;
+                    var str = '';
+                    str = base64.substr(num);
+                    $.ajax({
+                        url:"/user/user/upload.do",
+                        data:{picture:str},
+                        type:'post',
+                        dataType:'json',
+                        success:function(i){
+                            if(i.code == 200){
+                                judge == 'input3' ? that.setState({ userimgY:i.data }) :  that.setState({ userimgN:i.data });
+                            }
+                        }
+                    })
+                };
+            };
+            oReader.readAsDataURL(file);
+        }
+    }
     handleChange(e,e1){
-		
 		var Inp = $(this.refs[e]);
 		var val = Inp.val();
 		if(val.length>0){
@@ -312,6 +279,7 @@ class Edite extends Component {
 		$(this.refs[e1]).hide();
 	}
 	toSubmit(){
+
 		if( (this.state.input1!=null) && (this.state.input2!=null) && (this.state.userimgN!=null) && (this.state.userimgY!=null) ){
 			
 			var _this = this;
@@ -329,16 +297,15 @@ class Edite extends Component {
 				dataType:'json',
 				success:function(i){
 					if(i.code == 200){
-						$(_this.refs.success_mask).show();
-						$(_this.refs.success_mask).animate({'opacity':1},500,function(){
-							
-							$(_this.refs.success_mask).animate({'opacity':0},500,function(){
-								$(_this.refs.success_mask).hide();
-								$(_this.refs.btn_submit).css('background','#82848a');
-								_this.init();
-							})
-							
-						})
+						_this.init();
+						$(_this.refs.hints).html('提交成功');
+						$(_this.refs.hintsC).show();
+						setTimeout(function(){
+							$(_this.refs.hintsC).hide();
+						},1000)
+						$(_this.refs.btn_submit).css('background','#999');
+						$(_this.refs.input_none1).hide();
+						$(_this.refs.input_none2).hide();											
 						_this.setState({
 							confirm:{
 								show:false,
@@ -347,16 +314,25 @@ class Edite extends Component {
 							confirmNum:1,
 							confirmOk:function(){}
 						});
+						
+						
+						
 					}
 					else{
 						_this.setState({
 							confirm:{
-								show:true,
+								show:false,
 								content:i.msg
 							},
 							confirmNum:1,
 							confirmOk:function(){}
 						});
+						$(_this.refs.hints).html(i.msg);
+						$(_this.refs.hintsC).show();
+						$(_this.refs.btn_submit).html('重新提交') 
+						setTimeout(function(){
+							$(_this.refs.hintsC).hide();
+						},1000)
 					}
 				}
 			})
@@ -376,7 +352,7 @@ class Edite extends Component {
 		}
 	}
     render() {
-		var sure_submit = ''
+		var sure_submit = '';
 		if( (this.state.input1!=null) && (this.state.input2!=null) && (this.state.userimgN!=null) && (this.state.userimgY!=null) ){
 			sure_submit = 'sure_submit' 
 		}
@@ -385,22 +361,24 @@ class Edite extends Component {
             <section className="approve_main">
                
                 <div className="userName">
-                	<input ref="input1" type="text" id="j_name" placeholder="真实姓名" onChange={()=>this.handleChange('input1','input_none1')} />
+                	<p className='certified' ref='certified'>已认证信息</p>
+                	<input ref="input1" type="text" id="j_name" placeholder="姓名" value={this.state.input1} onChange={()=>this.handleChange('input1','input_none1')} />
                 	<img ref="input_none1" src="../../../static/realname_label_icon_delete.png" className="input_none1" onClick={()=>this.removeInput('input1','input_none1')} />
                 	
-                	<input ref="input2" type="text" placeholder="身份证号码" id="j_id" onChange={()=>this.handleChange('input2','input_none2')} />
+                	<input ref="input2" type="text" placeholder="身份证" id="j_id" onChange={()=>this.handleChange('input2','input_none2')} />
                 	<img ref="input_none2" src="../../../static/realname_label_icon_delete.png" className="input_none2" onClick={()=>this.removeInput('input2','input_none2')} />
                 </div>
-                
-                <div className="userImg">
+                <div className='hint' ref='hintsC'><p><span ref='hints'></span></p></div>
+                <div className='user_userimg' ref='user_userimg'>身份证照片</div>
+                <div className="userImg" ref='userImg'>
                 
                 	<div className="up_img">
                 	
                 		{
 							this.state.userimgY == null ?
 								<div className="up_img_content">
-									<img src="../../../static/realname_icon_addIDcard.png" />
-									<p>身份证正面照片</p>
+									<img src="../../../static/Group 2@3x.png" />
+									<p>正面照片</p>
 								</div>
 								:
 								<div className="up_img_content">
@@ -408,7 +386,7 @@ class Edite extends Component {
 								</div>
 						}
                 		
-                		<input type="file" accept="image/*;capture=camera" className="sfz_z input_none" onClick={()=>this.updatePic(0)} />
+                		<input type="file" accept="image/*;capture=camera" className="sfz_z input_none" onChange={()=>this.selectFileImage('input3')} ref="input3"/>
                 	</div>
                 	
                 	<div className="up_img up_imgL">
@@ -416,8 +394,8 @@ class Edite extends Component {
                 		{
 							this.state.userimgN == null ?
 								<div className="up_img_content">
-									<img src="../../../static/realname_icon_addIDcard.png" />
-									<p>身份证反面照片</p>
+									<img src="../../../static/Group 1@3x.png" />
+									<p>背面照片</p>
 								</div>
 								:
 								<div className="up_img_content">
@@ -425,7 +403,7 @@ class Edite extends Component {
 								</div>
 						}
                 		
-                		<input type="file" accept="image/*;capture=camera" className="sfz_f input_none" onClick={()=>this.updatePic(1)} />
+                		<input type="file" accept="image/*;capture=camera" className="sfz_f input_none" onChange={()=>this.selectFileImage('input4')} ref="input4"/>
                 	</div>
                 	
                 </div>
@@ -435,21 +413,62 @@ class Edite extends Component {
                 <Confirm type={this.state.confirmNum} confirm={this.state.confirm} isOk={this.state.confirmOk}/>
                 
                 <div ref="success_mask" className="success_mask">
-					<img src="/static/circle/popovers_icon_succeed@3x.png" />
+					<img src="/static/circle/popovers_icon_succeed@3x.png"/>
 					<p>提交成功</p>
                 </div>
                 
                 <div ref="mask" className="all_mask"></div>
-                
+            <style jsx>{`
+				.hint{
+				display:none;
+				width:100%;
+				height:.44rem;
+				position:fixed;
+				top:37%;
+				z-index:2;
+				}
+				.hint p{
+				
+					width:100%;
+					height:.44rem;
+					display:flex;
+					flex-direction:column;
+					justify-content:center;
+					align-items:center;
+				}
+				.hint span{
+					display:inline-block;
+					margin:0 auto;
+					background:rgba(0,0,0,0.75);
+					border-radius:4px;
+					padding:.0 .1rem;
+					line-height:.44rem;
+					text-align:center;
+					font-family:.PingFangSC-Regular;
+					font-size:14px;
+					color:#ffffff;
+				}
+				.userName .certified{
+					display:none;
+					width:100%;
+					height:.3rem;
+					line-height:.3rem;
+					font-size:12px;
+					color:#999999;
+					background:#f5f5f5;
+					text-indent:0.22rem;
+				}
+				.user_userimg{
+					height:.4rem;
+					line-height:.4rem;
+					width:100%;
+					font-size:14px;
+					color:#999999;
+					letter-spacing:0;
+					text-indent:0.22rem;
+				}
+		`}</style> 
             </section>
         )
     }
 }
-export default () => (
-  <div>
-        <Header_title text="实名认证"/>
-        <div><Header text="实名认证" /></div>
-        <Style/>
-        <Edite/>
-    </div>
-)

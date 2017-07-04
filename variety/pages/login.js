@@ -16,14 +16,17 @@ export default (e) => (
                <Login login={e}/>
         </div>
         <style jsx global>{`
-            body{background: #0d1122;}
             .right{float: right;}
+            .content{
+                padding-bottom: 0.6rem;
+            }
         `}</style>
         <style jsx>{`
             .content{
                 height:100%;
-                background: #0d1122;
+                background: #fff;
                 position: relative;
+                padding-bottom: 0.6rem;
             }
            
            

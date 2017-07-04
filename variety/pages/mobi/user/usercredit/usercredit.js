@@ -16,10 +16,11 @@ class Edite extends Component {
         }
     }
     componentDidMount(){
+        var _this=this;
         $.ajax({
             type:'get',
             url:'/user/user/userCertification.do',
-            data:{},
+            data:{id:_this.props.id},
             dataType:'json',
             success:function(d){
                 if(d.code==200){
@@ -32,8 +33,11 @@ class Edite extends Component {
         });
     }
     render() {
-		var s = {0:'审核中',1:'已认证',2:'认证失败'};
+		var s = {0:'审核中',1:'已认证',2:'未认证'};
 		var userStatus = this.state.data ? s[this.state.data.status] : '未认证';
+        if (userStatus=='已认证') {
+            $('#renzheng').css('color','#869bcb')
+        }
         return (
             <section className="page-main">
                 <ul className="page-mainC">
@@ -42,7 +46,7 @@ class Edite extends Component {
                             <Link href="/mobi/user/usercredit/approve"><a style={{ position: 'relative' }}>
                                 <span>实名认证</span>
                                 <span className="youjt"></span>
-                                <span className="right text-lesser" id="renzheng">{userStatus}</span>
+                                <span className="right text-lesser" ref='shenhe' id="renzheng">{userStatus}</span>
                             </a></Link>
                         </div>
                     </li>

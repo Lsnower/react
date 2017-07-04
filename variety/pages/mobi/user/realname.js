@@ -14,14 +14,24 @@ class Edite extends Component {
             date: props._usmes,
             confirm:{
                 show:false,
-                content:'',
-                fun:null
-            }
+                content:''
+            },
+            fun:null,
+            funno:null,
+            showtip:true
         }
         this.sublic= this.sublic.bind(this);
+        this.del= this.del.bind(this);
+        this.handleChange= this.handleChange.bind(this);
     }
     componentDidMount(){
         $(this.refs.county).val(this.state.date)
+        this.setState({
+            confirm:{
+                show:false,
+                content:'',
+            }
+        })
     }
     sublic (event) {
         let _name = this.refs.county.value,that = this;
@@ -29,13 +39,14 @@ class Edite extends Component {
             that.setState({
                 confirm:{
                     show:true,
-                    content:'昵称最多8个字符，请重新输入',
+                    content:'1-8个字符，可由中英文、数字组成',
                 }
             })
         }else{
             $.ajax({
-                url:'/user/user/updateUserName.do',
+                url:'/user/user/updateUser.do',
                 data:{userName:_name},
+                type:'post',
                 success:function(d){
                     if(d.code == 200){
                         $(that.refs.success_mask).show();
@@ -43,7 +54,7 @@ class Edite extends Component {
                             $(that.refs.success_mask).animate({'opacity':0},500,function(){
                                 $(that.refs.success_mask).hide();
                                 Router.push({
-                                    pathname:'/mobi/user/profile'
+                                    pathname:'/mine'
                                 });
                             })					
                         }) 
@@ -62,6 +73,22 @@ class Edite extends Component {
                                 confirm:{
                                     show:true,
                                     content:d.msg,
+                                },
+                                fun:function(){
+                                    that.setState({
+                                        confirm:{
+                                            show:false,
+                                            content:''
+                                        }
+                                    })
+                                },
+                                funno:function(){
+                                    that.setState({
+                                        confirm:{
+                                            show:false,
+                                            content:''
+                                        }
+                                    })
                                 }
                             })
                         }
@@ -72,20 +99,34 @@ class Edite extends Component {
         
         
     }
+    handleChange(){
+        var con = $(this.refs.county).val();
+        con.length > 0 ? this.setState({showtip:true}) : this.setState({showtip:false})
+    }
+    del(){
+        $(this.refs.county).val('');
+        this.setState({
+            showtip:false
+        })
+    }
     isnoLogin(){
         Router.push({pathname: '/login'});
     }
     render() {
+        var a = this.state.showtip,b;
+        b = a ? '' : 'none';
         return (
             <section className="page-main">
                 <div className="real">
-                    <input className="real-name" type="text" placeholder="请输入用户名" maxLength="8" ref="county"/>
+                    <input onChange={()=>this.handleChange()} className="real-name" type="text" placeholder="请输入用户名" maxLength="8" ref="county"/>
+                    <img className={b} onClick={this.del} src="/static/mine/userinformation_list_norealname@2x.png"/>
                 </div>
-                <div className="sbtn" onClick={this.sublic}>提交</div>
-                <Alert type='2' confirm={this.state.confirm} isOk={this.state.fun}/>
+                <p className="realname_tip">1-8个字符，可由中英文、数字组成</p>
+                <div className="sbtn" onClick={this.sublic}>保存</div>
+                <Alert type='2' confirm={this.state.confirm} isOk={this.state.fun} isNot={this.state.funno}/>
                 <div ref="success_mask" className="success_mask">
 					<img src="/static/circle/popovers_icon_succeed@3x.png" />
-					<p>提交成功</p>
+					<p>保存成功</p>
                 </div>
             </section>
         )

@@ -92,25 +92,26 @@ class Edite extends Component {
         if(year == nowYear){
 			if(mon == nowMon){
                 t[0] = '本月';
-			}
-			else{
+                if(day == nowDay){
+                    t[1] ='今天'
+                }else{
+                    var f = nowDay-day;
+                    t[1] = f == 1?'昨天':day+'日';
+                }
+			}else{
 				t[0] = mon+'月';
+                t[1] = day+'日';
 			}
 		}else{
-            t[0] = year+'年'+mon+'月'+day+'日';
+            t[0] = year+'年'+mon+'月';
+            t[1] = day+'日';
         }
-        if(day == nowDay){
-				t[1] ='今日' +' '+ hour+':'+min;
-        }
-        else{
-			var f = nowDay-day;
-			t[1] = f == 1?'昨日'+' '+hour+':'+min:day+'日'+' '+ hour+':'+min;
-        }
+        
         t[2] = hour+':'+min;
 		return t
 	}
     render() {
-        let that=this,a,b,c,d;
+        let that=this,a,b,c,d,e,f,g,h;
         let _datalist = that.state.viewData;
         let _array=[];
         var  newList = [];
@@ -118,6 +119,7 @@ class Edite extends Component {
             var o={}
             o['time'] =  that.formattimes(_datalist[i].createTime)[1];
             o['createTime'] = that.formattimes(_datalist[i].createTime)[0];
+            o['houre'] = that.formattimes(_datalist[i].createTime)[2];
             o['data']=_datalist[i];
             _array.push(o);
         }
@@ -136,23 +138,29 @@ class Edite extends Component {
         let doc = '';
         if (_datalist.length>0) {
                 return (
+                    <ul className="detail_list">
                     <InfiniteScroll  next={this.showlistmsg} height={this.state.bigHeight} hasMore={this.state.viewMore} loader={ <div className="view-bottom">加载更多</div>} endMessage={<div className="view-bottom">已加载全部</div>}>
-                  <ul className="detail_list">
+                  
                         {   
                             newList.map(function(v,r){
                                 doc = v.nodeList.map(function(m,n){
                                     a = m.data.platformName;
                                     b = m.time;
-                                    return(
-                                        <li key={n}>
-                                            
+                                    e = m.houre;
+                                    f = m.data.type>0 ? '+':'-';
+                                    
+                                    h = m.data.platformName ? '('+m.data.platformName+')' : ''
+                                    return(                 
+                                        <li key={n}>  
                                             <div className="left">
-                                                <p>{m.data.remark}</p>
-                                                <p>{a}</p>
+                                                <p>{b}</p>
+                                                <p>{e}</p>
+                                            </div>
+                                            <div className="center">
+                                                <p>{m.data.remark+h}</p>
                                             </div>
                                             <div className="right">
-                                                <p>{b}</p>
-                                                <p className="usermoney">{m.data.money.toFixed(2)} 元</p>
+                                                <p className="usermoney">{f+m.data.money.toFixed(2)} 元</p>
                                             </div>
                                         </li>
                                     )
@@ -165,11 +173,12 @@ class Edite extends Component {
                                     )
                             })
                         }
-                  </ul>
+                  
                     </InfiniteScroll>
+                    </ul>
                 )
         }else{
-            return <Text_none text="暂无明细"/>;
+            return <Text_none text="你还没有交易过哦"/>;
         }
     }
 }
@@ -185,18 +194,19 @@ export default class Feedback extends React.Component {
         <style jsx global>{`
             html{background:#e7e7e8;}
             .detail_list li{
-                padding:0.15rem;
-                background:#fff;
-                border-bottom:1px solid #e7e7e8;
+                padding: 0 0.15rem;
+                background: #fff;
+                border-bottom: 1px solid #e7e7e8;
                 overflow: hidden;
+                height: 0.6rem;
             }
             .detail_list li p{
-                color:#82848a;
+                color:#999999;
                 font-size:0.14rem;
                 line-height:0.23rem;
             }
             .detail_list li .usermoney{
-                color:#0c0f16;
+                color:#222222;
                 font-size:0.15rem;
                 text-align:right;
             }
@@ -204,6 +214,27 @@ export default class Feedback extends React.Component {
                 line-height:0.4rem;
                 color:#b3b3b3;
                 text-indent: 10px;
+            }
+            .center{
+                float:left;
+                height:100%;
+                width:46%;
+            }
+            
+            .center p{
+                float:left;
+                height:100%;
+                width:100%;
+                padding-top:0.15rem;
+            }
+            .left{
+                height:100%;
+                width:15%;
+                padding-top:0.1rem;
+            }
+            .right p{
+                height:100%;
+                line-height:0.6rem !important;
             }
         `}</style>
     </div>

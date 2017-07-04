@@ -1,7 +1,8 @@
 import React from 'react'
 import Header_title from '../common/header/header_title.js'
-import Head from '../common/header/header_left.js'
+import Head from '../common/header/header_black.js'
 import Updown from './updown.js'
+import Type from '../common/type.js'
 import Sline from './sline.js'
 import Kline from './kline.js'
 import $ from 'jquery'
@@ -63,20 +64,20 @@ class TabController extends React.Component {
                  nav div{
                     flex:1;
                     -webkit-flex:1;
-                    font-size.16rem;
-                    color:#0c0f16;
+                    font-size.15 rem;
+                    color:#666;
                     line-height:.4rem;
                     position:relative;
                     text-align:center;
                  }
                  nav div.on{
-                    color:#869bcb;
+                    color:#222;
                  }
                 nav div.on:after{
                     content:'';
                     width:.5rem;
                     height:.01rem;
-                    border-bottom:.02rem solid #869bcb;
+                    border-bottom:.02rem solid #222;
                     position:absolute;
                     bottom:0rem;
                     left:50%;
@@ -99,6 +100,7 @@ class Info extends React.Component{
         this.state={
             info:null
         }
+        this.hanleSplit = this.hanleSplit.bind(this);
     }
     componentDidMount(){
         var _this = this;
@@ -116,22 +118,73 @@ class Info extends React.Component{
             }
         })
     }
+    hanleSplit(d){
+        var r = d.split('//');
+        return r;
+    }
     render(){
         var d = this.state.info;
         if(d){
-            {var _time=d.tradeTime.split('//'),opsition=d.opsitionTime.split('//')}
              return(<div className="info">
                     <p><span>交易品种</span>{d.varietyName}</p>
                     <p><span>交易代码</span>{d.varietyType}</p>
-                    <p className="info-time"><span>交易时间</span>{_time[0]}<div className='pt50'>{_time[1]}</div></p>
-                    <p className="info-time"><span>持仓时间</span>{opsition[0]}<div className='pt50'>{opsition[1]}</div></p>
-                    <p><span>交易单位</span>{d.tradeUnit}</p>
-                    <p><span>报价单位</span>{d.reportPriceUnit}</p>
-                    <p><span>最低保证金</span>{d.lowestMargin}</p>
-                    <p><span>交易方式</span>{d.tradeType}</p>
-                    <p><span>交易制度</span>{d.tradeRegime}</p>
-                    <p><span>交割时间</span>{d.deliveryTime}</p>
-                    <p className="info-time"><span>每日价格<br/>最大波动限制</span>{d.everydayPriceMaxFluctuateLimit}</p>
+                    <p className="info-time"><span>交易时间</span>{this.hanleSplit(d.tradeTime)[0]}
+                    {
+						this.hanleSplit(d.tradeTime).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.tradeTime)[i]}</div>) :  ''
+						))
+					}
+                    </p>
+                    <p className="info-time"><span>持仓时间</span>{this.hanleSplit(d.opsitionTime)[0]}
+                    {
+						this.hanleSplit(d.opsitionTime).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.opsitionTime)[i]}</div>) :  ''
+						))
+					}
+					 </p>
+                    <p className="info-time"><span>交易单位</span>{this.hanleSplit(d.tradeUnit)[0]}
+					{
+						this.hanleSplit(d.tradeUnit).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.tradeUnit)[i]}</div>) :  ''
+						))
+					} 
+                   </p>
+                    <p className="info-time"><span>报价单位</span>{this.hanleSplit(d.reportPriceUnit)[0]}
+					{
+						this.hanleSplit(d.reportPriceUnit).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.reportPriceUnit)[i]}</div>) :  ''
+						))
+					} 
+                   </p>
+                    <p className="info-time"><span>最低保证金</span>{this.hanleSplit(d.lowestMargin)[0]}
+					{
+						this.hanleSplit(d.lowestMargin).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.lowestMargin)[i]}</div>) :  ''
+						))
+					}  
+                   </p>
+                    <p className="info-time"><span>交易方式</span>{this.hanleSplit(d.tradeType)[0]}
+                    {
+						this.hanleSplit(d.tradeType).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.tradeType)[i]}</div>) :  ''
+						))
+					}
+                   </p>
+                    <p className="info-time"><span>交易制度</span>{this.hanleSplit(d.tradeRegime)[0]}
+					 {
+						this.hanleSplit(d.tradeRegime).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.tradeRegime)[i]}</div>) :  ''
+						))
+					} 
+                   </p>
+                    <p className="info-time"><span>交割时间</span>{this.hanleSplit(d.deliveryTime)[0]}
+					{
+						this.hanleSplit(d.deliveryTime).map((e,i)=>(
+							i>0 ?  (<div className='pt50'>{this.hanleSplit(d.deliveryTime)[i]}</div>) :  ''
+						))
+					}  
+                   </p>
+                    <p className="info-time"><span>每日价格<br/>最大波动限制</span>{this.hanleSplit(d.everydayPriceMaxFluctuateLimit)[0]}<div className='pt50'>{this.hanleSplit(d.everydayPriceMaxFluctuateLimit)[1]}</div></p>
                     <style>{`
                         .info{
                             padding:0 .1rem;
@@ -139,12 +192,13 @@ class Info extends React.Component{
                         .info p{
                             line-height:.35rem;
                             font-size:.12rem;
-                            color:#0c0f16;
+                            color:#222;
+                            min-height:.35rem;
                         }
                         .info span{
                             display:inline-block;
                             width:.8rem;
-                            color:#82848a;
+                            color:#999;
                         }
                         .info p.info-time{
                             line-height:.18rem;
@@ -225,7 +279,8 @@ class View extends React.Component{
             }
         }
     }
-    txClick(id){
+    txClick(id,e){
+		e.stopPropagation();
         if(this.props.isLogin){
             Router.push({
                 pathname:'/mobi/user/circle_user/userInfo',
@@ -247,7 +302,7 @@ class View extends React.Component{
         if(this.props.isLogin){
             Router.push({
                 pathname:'/mobi/circle/components/service_detail',
-                query:{viewpointId:id,type:'detail'}
+                query:{viewpointId:id,type:'detail',notab:'true'}
             })
         }else{
             this.setState({
@@ -274,7 +329,7 @@ class View extends React.Component{
             l = function(e) {
                 return (10 > e ? "0": "") + e
             },
-            z = new Date((Y + '-' + l(M) + '-' + l(D) + ' 00:00:00')).getTime(),
+            z = new Date((Y + '/' + l(M) + '/' + l(D) + ' 00:00:00')).getTime(),
             f;
         f = (Y-new Date(t).getFullYear())>0?'Y年M月D日':t - z <0?t-z<-86400000?'M月D日':'昨日 h:m':'h:m';
         return f;
@@ -292,17 +347,16 @@ class View extends React.Component{
                         {var v = e.direction?ihigh:ilow;}
                          return(
                             <div  className='list' key={i}>
-                               <div className='view-head'>
-                                  <img src={e.userPortrait?e.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':'/static/mine/headportrait160x160@3x.png'} onClick={()=>{this.txClick(e.userId)}} />
-                                  <span>{e.userName}</span>
-                                  <em>{e.isAttention==1?'':'已关注'}</em>
-                                  <em className='view-time'>{this.dates().format(e.createTime,this.when(e.createTime))}</em>
+                               <div className='view-head' onClick={()=>{this.viewClick(e.id)}}>
+                                  <img src={e.userPortrait?e.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':'/static/mine/headportrait160x160@3x.png'} onClick={(event)=>{this.txClick(e.userId,event)}} />
+                                  <span onClick={(event)=>{this.txClick(e.userId,event)}}>{e.userName}</span>
+                                  <em onClick={(event)=>{this.txClick(e.userId,event)}}>{e.isAttention==1?'':'已关注'}</em>
                                </div>
                                <div className='view-con' onClick={()=>{this.viewClick(e.id)}}>
-                                    <span className={e.direction?"thigh":'tlow'}><img src={'/static/future/'+v[e.guessPass]} /></span>
-                                    {e.content.length>45?e.content.substring(0,40)+'...':e.content}
+                                    {e.content}
                                </div>
                                <div className="view-foot" onClick={()=>{this.viewClick(e.id)}}>
+                                    <em className={e.direction?"thigh guessPass":'tlow guessPass'}><img src={'/static/future/'+v[e.guessPass]} /> {this.dates().format(e.createTime,this.when(e.createTime))}</em>
                                     <span className="view-star">{e.praiseCount>999?'999+':e.praiseCount}</span>
                                     <span className="view-comm">{e.replyCount>999?'999+':e.replyCount}</span>
                                </div>
@@ -327,21 +381,21 @@ class View extends React.Component{
                     }
                      .view-head img{
                         display:inline-block;
-                        width:.35rem;
+                        width:.32rem;
                         vertical-align:top;
-                        border-radius: .18rem;
-                        height: .35rem;
+                        border-radius: .16rem;
+                        height: .32rem;
                      }
                     .view-head span{
-                        color:#cd4a47;
-                        font-size:.16rem;
-                        line-height:.4rem;
+                        color:#222;
+                        font-size:.15rem;
+                        line-height:.32rem;
                         padding:0 .05rem;
                     }
                     .view-head em{
-                        color:#b3b3b3;
-                        line-height:.4rem;
-                        font-size:.12rem;
+                        color:#999;
+                        line-height:.32rem;
+                        font-size:.1rem;
                     } 
                     .view-time{
                         float:right;
@@ -349,44 +403,55 @@ class View extends React.Component{
                     .view-con{
                         font-size:.13rem;
                         line-height:.24rem;
-                        color:#82848a;
+                        height:.48rem;
+                        color:#222;
+                        padding-left:.37rem;
+                        text-overflow: -o-ellipsis-lastline;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
                     }
-                    .view-con span{
-                        display:inline-block;
-                        width:.33rem;
-                        height:.13rem;
-                        margin-right:.05rem;
-                    }
-                   .view-con span img{
+                    .view-foot em.guessPass{
                         display:block;
-                        margin-top:.01rem;
-                        width:100%;
+                        height:.14rem;
+                        margin-right:.05rem;
+                        font-size:.1rem;
+                        color:#999;
+                        float:left;
+                        line-height:.14rem;
+                    }
+                   .view-foot .guessPass img{
+                        display:inline-block;
+                        height:100%;
+                        vertical-align:bottom
                    }
                     .view-foot{
                         width:100%;
-                        height:.4rem;
+                        height:.2rem;
                         position:relative;
+                        margin-top:.2rem;
+                        padding-left:.37rem;
                     }
                     .view-foot span{
-                        line-height:.4rem;
-                        color:#82848a;
+                        line-height:.2rem;
+                        color:#999;
                         display: inline-block;
-                        line-height: .19rem;
+                        line-height: .12rem;
                         padding-left: .22rem;
-                        font-size: .12rem;
-                        margin-top:.2rem;
+                        font-size: .1rem;
                         float:right;
                     }
 
                     .view-foot .view-star{
-                        color:#cd4a47;
-                        background: url(/static/circle/futures_opinion_icon_like@3x.png) no-repeat .05rem .02rem;
-                        background-size: 0.17rem;
+                        background: url(/static/circle/circledetail_content_icon_unlike@3x.png) no-repeat .05rem;
+                        background-size: .12rem;
                     }
                     .view-foot .view-comm{
                         background: url(/static/circle/circledetail_content_icon_discuss@3x.png) no-repeat .03rem;
                         margin-right:.05rem;
-                        background-size: 0.17rem;
+                        background-size: .13rem;
                     }
                     .view-bottom{
                         width:100%;
@@ -415,13 +480,17 @@ class Foot extends React.Component{
         this.setOptional = this.setOptional.bind(this);
         this.getOptional = this.getOptional.bind(this);
         this.optional = this.optional.bind(this);
+        this.hanleTrade = this.hanleTrade.bind(this);
+        this.checkIsAuth = this.checkIsAuth.bind(this);
         this.state={
             confirm:{
                 show:false,
                 type:1,
-                content:''
+                content:'',
+                trade:0
             },
-            optional:0
+            optional:0,
+            isTrade:1
         }
     }
     handleCom(){
@@ -465,6 +534,24 @@ class Foot extends React.Component{
     componentDidMount(){
         var _this = this;
         _this.getOptional();
+        _this.checkIsTrade();
+    }
+    checkIsTrade(){
+        var _this = this;
+        $.ajax({
+            type:'get',
+            url:'/user/dictionary/findDictionaryForJson.do',
+            data:{type:'variety_deal'},
+            dataType:'JSON',
+            success:function(e){
+                if(e.code==200){
+                    _this.setState({
+                        isTrade:e.data.furtureDealStatus
+                    })
+                   
+                }
+            }
+        });
     }
     getOptional(){
         var _this = this;
@@ -526,17 +613,33 @@ class Foot extends React.Component{
             }
         });
     }
+    checkIsAuth(){
+        var lastAuthTime = localStorage.getItem('auth-'+this.props.vtype) - 0,
+            now = new Date().getTime();
+        if(lastAuthTime&&(now - lastAuthTime<604800000)){
+            localStorage.setItem('auth-'+this.props.vtype,now);
+        location.href='http://gf1.dajiexin.com/';
+        }else{
+            this.hanleTrade();
+        }
+    }
+    hanleTrade(){
+        this.setState({
+            trade:!this.state.trade
+        })
+    }
     render(){
         return(<div className="foot">
-            <span className="comment" onClick={this.handleCom}><em><img src="/static/future/futures_btn_opinion@2x.png" />发表观点</em></span>
-            <span className="chooice" onClick={this.state.optional?this.optional:this.setOptional}><em>{this.state.optional?'取消自选':'+自选'}</em></span>
-            <span className="trade"><em><img src="/static/future/futures_btn_trade@3x.png" /><Link href={'https://www.dajiexin.com/'}><a>交易</a></Link></em></span>
+            <span className={this.state.isTrade?"trade":"trade notrade"} onClick={this.checkIsAuth}>交易</span>
+            <span className="chooice" onClick={this.state.optional?this.optional:this.setOptional}>{this.state.optional?'取消自选':'+自选'}</span>
+            <span className="comment" onClick={this.handleCom}>发表观点</span>
             <Alert type={this.state.confirm.type} confirm={this.state.confirm} isNot={this.isOk} isOk={this.state.confirm.type==1?this.isOk:this.setOptional}/>
+            <Type show={this.state.trade} callback={this.hanleTrade} type={1} vtype={this.props.vtype}/>
             <style>{`
                 .foot{
-                    height:.45rem;
+                    height:.49rem;
                     width:100%;
-                    background:#cd4a47;
+                    background:#fff;
                     display:flex;
                     display:-webkit-flex;
                     position:fixed;
@@ -546,33 +649,30 @@ class Foot extends React.Component{
                 }
                 .foot span{
                     color:#fff;
-                    line-height:.38rem;
+                    line-height:.49rem;
                     text-align:center;
-                    font-size:.14rem;‘
+                    font-size:.15rem;‘
                     display:block;
                     position:relative;
-                    height:.38rem;
-                    margin-top:.03rem;
-                }
-                .foot span em{
-                    height:.16rem;
-                    font-size:.14rem;
-                    margin:0 auto;
-                }
+                    height:.49rem;
+                    color:#cd4a47;
+                     flex:1;
+                    -webkit-flex:1;
+                    border-top:0.01rem solid #ddd;
 
-                .comment{
-
-                    flex:2;
-                    -webkit-flex:2;
-                    position:relative;
+                }
+                .notrade{
+                    display:none;
                 }
                 .chooice{
-                    border-left:0.01rem solid #fff;
-                    border-right:0.01rem solid #fff;
+                    border-left:0.01rem solid #ddd;
                 }
-                .chooice,.trade{
-                    flex:1;
-                    -webkit-flex:1;
+                .foot span.comment{
+                  color:#fff; 
+                  background:#cd4a47;
+                  height:.5rem;
+                  line-height:.5rem;
+                  border:none;
                 }
                 .comment em img,.trade em img{
                     display:inline-block;
@@ -684,21 +784,21 @@ class Quota extends React.Component{
         _this.serverRequest=$.ajax({
             type:'get',
             url:'/coterie/viewpoint/findViewpoint.do',
-            data:{page:_this.state.viewPage,pageSize:10,varietyId:_this.props.data.varietyId},
+            data:{page:_this.state.viewPage,pageSize:15,varietyId:_this.props.data.varietyId},
             dataType:'JSON',
             success:function(e){
                 if(e.code==200&&e.data.length){
                     _this.setState({
                         viewData:_this.state.viewData.concat(e.data),
                         viewPage:_this.state.viewPage+1,
-                        viewMore:e.resultCount>(_this.state.viewPage+1)*10?true:false
+                        viewMore:e.resultCount>(_this.state.viewPage+1)*15?true:false
                     })
                 }
             }
         })
     }
     render (){
-        var d = this.props.data.exchangeStatus?this.state.data:null,
+        var d = this.props.data?this.state.data:null,
             t = window.navigator.userAgent.toLowerCase().match(/MicroMessenger/i)=='micromessenger'?'0':'0.5',
             s = {
                 marginTop:t+'rem'
@@ -706,21 +806,21 @@ class Quota extends React.Component{
             sacle = this.props.data.marketPoint;
         return <div className="content" style={s}>
             <div className='mdata'>
-                <div className={d?d.upDropPrice>0?'tleft thigh':'tleft tlow':'tleft'}>
-                    <span>{d?d.lastPrice.toFixed(sacle):'休市'}</span>
-                    <em>{d?(d.upDropPrice>0?'+'+d.upDropPrice:d.upDropPrice):''}   {d?(d.upDropSpeed>0?'+'+(d.upDropSpeed*100).toFixed(2)+'%':(d.upDropSpeed*100).toFixed(2)+'%'):''}</em>
+                <div className={d?d.upDropPrice>=0?'tleft thigh':'tleft tlow':'tleft thigh'}>
+                    <span>{d?d.lastPrice.toFixed(sacle):'0.00'}</span>
+                    <em>{d?(d.upDropPrice>=0?'+'+d.upDropPrice.toFixed(2):d.upDropPrice.toFixed(2)):'+0.00'}   {d?(d.upDropSpeed>=0?'+'+(d.upDropSpeed*100).toFixed(2)+'%':(d.upDropSpeed*100).toFixed(2)+'%'):'+0.00%'}</em>
                 </div>
                 <div className='tright'>
                     
                     <div>
                         <em>最高</em>
-                        <span>{this.state.data?this.state.data.highestPrice.toFixed(sacle):'--'}</span>
+                        <span className='first'>{this.state.data?this.state.data.highestPrice.toFixed(sacle):'--'}</span>
                         <em>最低</em>
                         <span>{this.state.data?this.state.data.lowestPrice.toFixed(sacle):'--'}</span>
                     </div>
                     <div>
                         <em>今开</em>
-                        <span>{this.state.data?this.state.data.openPrice.toFixed(sacle):'--'}</span>
+                        <span className='first'>{this.state.data?this.state.data.openPrice.toFixed(sacle):'--'}</span>
                         <em>{d?'昨收':'收盘'}</em>
                         <span>{this.state.data?d?this.state.data.preSetPrice.toFixed(sacle):this.state.data.lastPrice.toFixed(sacle):'--'}</span>
                     </div>
@@ -756,11 +856,10 @@ class Quota extends React.Component{
                     font-style:normal;
                 }
                 .mdata{
-                    
-                    background:#0c0f16;
+                    background:#222;
                     display:flex;
                     display:-webkit-flex;
-                    padding:.2rem;
+                    padding:.1rem;
                     width:100%;
                     position:fixed;
                     z-index: 99;
@@ -774,6 +873,7 @@ class Quota extends React.Component{
                     font-size:.38rem;
                     display:block;
                     color:#82848a;
+                    line-height: .45rem;
                 } 
                 .mdata .thigh span,.mdata .thigh em{
                     color:#cd4a47;
@@ -786,61 +886,53 @@ class Quota extends React.Component{
                     display:block;
                 }
                 .chart-content{
-                    padding-top:1rem;
+                    padding:0 .1rem;
+                    padding-top:.9rem;
+                    background:#fff;
                 }
                
                 .tright div{
-                    width:.7rem;
+                    min-width:.5rem;
                     padding-left:.12rem;
                     float:right;
                 }
                 
                 .tright div em{
                     font-size:.1rem;
-                    color:#82848a;
+                    color:#999;
                     display:block;
                 }
-                .tright div span{
+                
+                .tright div {
                     font-size:.12rem;
-                    color:#fff;
+                    color:#999;
                     display:block;
                 }
-                .tright div:last-child{
-                    border-right:.01rem solid #82848a;
-                } 
+                .tright div span.first{
+                    display:block;
+                    padding-bottom:.03rem;
+                }
                 .chart-title{
                     width:100%;
                     display:flex;
                     display:-webkit-flex;
-                    height:.4rem;
+                    height:.36rem;
                     border-bottom:.005rem solid #e7e7e8;
                 }
                 .chart-title li{
                     flex:1;
                     -webkit-flex:1;
                     font-size:.12rem;
-                    line-height:.4rem;
-                    color:#0c0f16;
+                    line-height:.36rem;
+                    color:#666;
                     text-align:center;
                     position:relative;
                     background:#fff;
                 }
                 .chart-title li.on{
-                    color:#869bcb;
+                    color:#cd4a47;
 
-                }
-                .chart-title li.on:after{
-                    content:'';
-                    width:.5rem;
-                    height:.01rem;
-                    border-bottom:.01rem solid #869bcb;
-                    position:absolute;
-                    bottom:0rem;
-                    left:50%;
-                    margin-left:-.25rem;
-                 }
-                
-                 
+                }     
             `}</style>
         </div>
     }
@@ -887,9 +979,10 @@ export default  class  Future extends React.Component {
     
     render (){
         if(this.state.vId){
+            var status = this.state.future.exchangeStatus?'交易中':'休市';
              return  <div className='quota_main'  ref="main" id="main">
                 <Header_title text='乐米期货行情'/>
-                <Head text={this.state.future.varietyName+'('+this.state.future.contractsCode+')'} little={this.state.future.smallVarietyTypeCode=='foreign'?'国际期货':'国内期货'} />
+                <Head text={this.state.future.varietyName+'('+this.state.future.contractsCode+')'} little={this.state.future.smallVarietyTypeCode=='foreign'?'国际期货-'+status:'国内期货-'+status} />
                  
                 <Quota data={this.state.future}/>
                 

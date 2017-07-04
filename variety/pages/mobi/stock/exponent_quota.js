@@ -1,6 +1,6 @@
 import React from 'react'
 import Header_title from '../common/header/header_title.js'
-import Head from '../common/header/header_left.js'
+import Head from '../common/header/header_black.js'
 import Updown from '../future/updown.js'
 import Sline from '../stock/ex_sline.js'
 import Kline from '../stock/kline.js'
@@ -64,19 +64,19 @@ class TabController extends React.Component {
                     flex:1;
                     -webkit-flex:1;
                     font-size.16rem;
-                    color:#0c0f16;
+                    color:#666;
                     line-height:.4rem;
                     position:relative;
                     text-align:center;
                  }
                  nav div.on{
-                    color:#869bcb;
+                    color:#222;
                  }
                 nav div.on:after{
                     content:'';
                     width:.5rem;
                     height:.01rem;
-                    border-bottom:.02rem solid #869bcb;
+                    border-bottom:.02rem solid #222;
                     position:absolute;
                     bottom:0rem;
                     left:50%;
@@ -115,13 +115,13 @@ class Down extends React.Component{
         clearTimeout(_this.timer);
         $.ajax({
             type:'get',
-            url:'/stock/sort',
-            data:{sort_type:"2",stock_type:_this.props.vId},
+            url:'/stk/stk/sort.do',
+            data:{direction:1,exchangeId:_this.props.vId},
             dataType:'JSON',
             success:function(e){
-                if(e.result[0].data){
+                if(e.data){
                     _this.setState({
-                        down:e.result[0].data
+                        down:e.data
                     })
                 }
             }
@@ -130,60 +130,103 @@ class Down extends React.Component{
             _this.getSort();
         },6000);
     }
-    routeStock(c){
+    routeStock(c,d){
         Router.push({
             pathname:'/mobi/stock/stock_quota',
-            query:{varietyType:c}           
+            query:{varietyType:c,varietyId:d}           
         })
     }
     render(){
         var d = this.state.down;
         if(d){
             return(<div>
+            <ul className="top"><li>名称</li><li>最新价格</li><li>涨跌幅</li></ul>
             {
                 d.map((e,i) => {
                     return(
-                        <div key={i} className='list' onClick={()=>this.routeStock(e.stock_code)}>
-                            <span>{e.code_name}<em>{e.stock_code}</em></span>
-                             <span className='price tlow'>{e.last_price}</span>
-                            <span className='percent tlow'>{e.value1+'%'}</span>  
+                        <div key={i} className='list' onClick={()=>this.routeStock(e.instrumentId,e.exchangeId)}>
+                            <span>{e.name}<em>{e.instrumentId}</em></span>
+                             <span className='price tlow'>{e.lastPrice}</span>
+                            <span><b className='percent tlow'>{(e.upDropSpeed*100).toFixed(2)+'%'}</b></span>  
                        </div>
                     )
                 }) 
             }
             <style>{`
-           div.list{
+                ul.top{
+                    width:100%;
+                    display:flex;
+                    background:#f5f5f5;
+                    border-bottom:.01rem solid #f0efef;
+                    padding-right:.1rem;
+                }
+                ul.top li{
+                    flex:1;
+                    text-align:left;
+                    padding-left:.12rem;
+                    font-size:.1rem;
+                    color:#999;
+                    line-height:.32rem;
+                }
+                ul.top li:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                }
+                 ul.top li:last-child{
+                    text-align:right;
+                }
+                 div.list{
                     width:100%;
                     display:flex;
                     display:-webkit-flex; 
-                    padding:.1rem 0; 
+                    padding:.1rem; 
                     border-bottom:.01rem solid #f0efef;                  
                 }
                 div.list span{
                     flex:1;
                     -webkit-flex:1;
                     display:block;
-                    padding-left:.12rem;
-                    font-size:.16rem;
+                    
+                }
+                 div.list span:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                    color:#222;
+                    font-size:.15rem;
                 }
                 div.list span em{
                     display:block;
-                    font-size:.12rem;
+                    font-size:.1rem;
                     font-style:normal;
-                    color:#82848a;
+                    color:#999;
                 }
                 span.price,span.percent{
                     line-height:.32rem;
-                    
-                    font-size:.16rem;
+                    color:#838489;
+                    font-size:.17rem;
                 }
                 span.thigh{
                     color:#cd4a47;
-                    background:none;
                 }
                span.tlow{
-                    color:#33d37e;
-                    background:none;
+                    color:#2ecc9f;
+               }
+               div.list span b{
+                    width:.7rem;
+                    height:.27rem;
+                    display:block;
+                    color:#fff;
+                    text-align:center;
+                    line-height:.27rem;
+                    font-size:.15rem;
+                    float: right;
+                    font-weight: normal;
+               }
+               div.list span b.thigh{
+                background:#ef6d6a;
+               }
+                div.list span b.tlow{
+                background:#2ecc9f;
                }
             `}</style>
         </div>)
@@ -217,13 +260,13 @@ class Up extends React.Component{
         clearTimeout(_this.timer);
        $.ajax({
             type:'get',
-            url:'/stock/sort',
-            data:{sort_type:"1",stock_type:_this.props.vId},
+            url:'/stk/stk/sort.do',
+            data:{direction:0,exchangeId:_this.props.vId},
             dataType:'JSON',
             success:function(e){
-                if(e.result[0].data){
+                if(e.data){
                     _this.setState({
-                        up:e.result[0].data
+                        up:e.data
                     })
                 }
             }
@@ -232,62 +275,30 @@ class Up extends React.Component{
             _this.getSort();
         },6000);
     }
-    toStock(c){
+    toStock(c,d){
         Router.push({
             pathname:'/mobi/stock/stock_quota',
-            query:{varietyType:c}           
+            query:{varietyType:c,varietyId:d}           
         })
     }
     render(){
         var d = this.state.up;
         if(d){
             return(<div>
+                <ul className="top"><li>名称</li><li>最新价格</li><li>涨跌幅</li></ul>
+
             {
                 d.map((e,i) => {
                     return(
-                        <div key={i} className='list' onClick={()=>this.toStock(e.stock_code)}>
-                            <span>{e.code_name}<em>{e.stock_code}</em></span>
-                             <span className='price thigh'>{e.last_price}</span>
-                            <span className='percent thigh'>{e.value1+'%'}</span>
+                        <div key={i} className='list' onClick={()=>this.toStock(e.instrumentId,e.exchangeId)}>
+                            <span>{e.name}<em>{e.instrumentId}</em></span>
+                             <span className='price thigh'>{e.lastPrice}</span>
+                            <span><b className='percent thigh'>{'+'+(e.upDropSpeed*100).toFixed(2)+'%'}</b></span>
                        </div>
                     )
                 }) 
             }
-            <style>{`
-                div.list{
-                    width:100%;
-                    display:flex;
-                    display:-webkit-flex; 
-                    padding:.1rem 0; 
-                    border-bottom:.01rem solid #f0efef;                  
-                }
-                div.list span{
-                    flex:1;
-                    -webkit-flex:1;
-                    display:block;
-                    padding-left:.12rem;
-                    font-size:.16rem;
-                }
-                div.list span em{
-                    display:block;
-                    font-size:.12rem;
-                    font-style:normal;
-                    color:#82848a;
-                }
-                span.price,span.percent{
-                    line-height:.32rem;
-                    
-                    font-size:.16rem;
-                }
-                span.thigh{
-                    color:#cd4a47;
-                    background:none;
-                }
-               span.tlow{
-                    color:#33d37e;
-                    background:none;
-               }
-            `}</style>
+           
         </div>)
         }else{
             return <Text_none text="暂无榜单！" />
@@ -343,7 +354,8 @@ class View extends React.Component{
             }
         }
     }
-    txClick(id){
+    txClick(id,e){
+		e.stopPropagation();
         if(this.props.isLogin){
             Router.push({
                 pathname:'/mobi/user/circle_user/userInfo',
@@ -362,10 +374,11 @@ class View extends React.Component{
         
     }
     viewClick(id){
+		
         if(this.props.isLogin){
             Router.push({
                 pathname:'/mobi/circle/components/service_detail',
-                query:{viewpointId:id,type:'detail'}
+                query:{viewpointId:id,type:'detail',notab:'true'}
             })
         }else{
             this.setState({
@@ -392,7 +405,7 @@ class View extends React.Component{
             l = function(e) {
                 return (10 > e ? "0": "") + e
             },
-            z = new Date((Y + '-' + l(M) + '-' + l(D) + ' 00:00:00')).getTime(),
+            z = new Date((Y + '/' + l(M) + '/' + l(D) + ' 00:00:00')).getTime(),
             f;
         f = (Y-new Date(t).getFullYear())>0?'Y年M月D日':t - z <0?t-z<-86400000?'M月D日':'昨日 h:m':'h:m';
         return f;
@@ -410,17 +423,16 @@ class View extends React.Component{
                         {var v = e.direction?ihigh:ilow;}
                          return(
                             <div  className='view-list' key={i}>
-                               <div className='view-head'>
-                                  <img src={e.userPortrait||'/static/mine/headportrait160x160@3x.png'} onClick={()=>{this.txClick(e.userId)}} />
-                                  <span>{e.userName}</span>
-                                  <em>{e.isAttention==1?'':'已关注'}</em>
-                                  <em className='view-time'>{this.dates().format(e.createTime,this.when(e.createTime))}</em>
+                               <div className='view-head' onClick={()=>{this.viewClick(e.id)}}>
+                                  <img src={e.userPortrait?e.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200':'/static/mine/headportrait160x160@3x.png'} onClick={(event)=>{this.txClick(e.userId,event)}} />
+                                  <span onClick={(event)=>{this.txClick(e.userId,event)}}>{e.userName}</span>
+                                  <em onClick={(event)=>{this.txClick(e.userId,event)}}>{e.isAttention==1?'':'已关注'}</em>
                                </div>
                                <div className='view-con' onClick={()=>{this.viewClick(e.id)}}>
-                                    <span className={e.direction?"thigh":'tlow'}><img src={'/static/future/'+v[e.guessPass]} /></span>
                                     {e.content.length>45?e.content.substring(0,40)+'...':e.content}
                                </div>
                                <div className="view-foot" onClick={()=>{this.viewClick(e.id)}}>
+                                    <em className={e.direction?"thigh guessPass":'tlow guessPass'}><img src={'/static/future/'+v[e.guessPass]} /> {this.dates().format(e.createTime,this.when(e.createTime))}</em>
                                     <span className="view-star">{e.praiseCount>999?'999+':e.praiseCount}</span>
                                     <span className="view-comm">{e.replyCount>999?'999+':e.replyCount}</span>
                                </div>
@@ -433,7 +445,7 @@ class View extends React.Component{
                 <Alert confirm={this.state.confirm}  isNot={this.isOk} isOk={this.isOk}/>
 
                 <style>{`
-                    .view-list{
+                   .view-list{
                         padding:.15rem .1rem;
                         width:100%;
                         border-bottom:.01rem solid #e7e7e8;
@@ -445,21 +457,21 @@ class View extends React.Component{
                     }
                      .view-head img{
                         display:inline-block;
-                        width:.35rem;
+                        width:.32rem;
                         vertical-align:top;
-                        border-radius: .18rem;
-                        height: .35rem;
+                        border-radius: .16rem;
+                        height: .32rem;
                      }
                     .view-head span{
-                        color:#cd4a47;
-                        font-size:.16rem;
-                        line-height:.4rem;
+                        color:#222;
+                        font-size:.15rem;
+                        line-height:.32rem;
                         padding:0 .05rem;
                     }
                     .view-head em{
-                        color:#b3b3b3;
-                        line-height:.4rem;
-                        font-size:.12rem;
+                        color:#999;
+                        line-height:.32rem;
+                        font-size:.1rem;
                     } 
                     .view-time{
                         float:right;
@@ -467,45 +479,48 @@ class View extends React.Component{
                     .view-con{
                         font-size:.13rem;
                         line-height:.24rem;
-                        color:#82848a;
+                        color:#222;
+                        padding-left:.37rem;
                     }
-                    .view-con span{
-                        display:inline-block;
-                        width:.33rem;
-                        height:.13rem;
-                        margin-right:.05rem;
-                        background:none;
-                    }
-                   .view-con span img{
+                    .view-foot em.guessPass{
                         display:block;
-                        margin-top:.01rem;
-                        width:100%;
+                        height:.14rem;
+                        margin-right:.05rem;
+                        font-size:.1rem;
+                        color:#999;
+                        float:left;
+                        line-height:.14rem;
+                    }
+                   .view-foot .guessPass img{
+                        display:inline-block;
+                        height:100%;
+                        vertical-align:bottom
                    }
                     .view-foot{
                         width:100%;
-                        height:.4rem;
+                        height:.2rem;
                         position:relative;
+                        margin-top:.2rem;
+                        padding-left:.37rem;
                     }
                     .view-foot span{
-                        line-height:.4rem;
-                        color:#82848a;
+                        line-height:.2rem;
+                        color:#999;
                         display: inline-block;
-                        line-height: .19rem;
+                        line-height: .12rem;
                         padding-left: .22rem;
-                        font-size: .12rem;
-                        margin-top:.2rem;
+                        font-size: .1rem;
                         float:right;
                     }
 
                     .view-foot .view-star{
-                        color:#cd4a47;
-                        background: url(/static/circle/futures_opinion_icon_like@3x.png) no-repeat .05rem .02rem;
-                        background-size: 50%;
+                        background: url(/static/circle/circledetail_content_icon_unlike@3x.png) no-repeat .05rem;
+                        background-size: .12rem;
                     }
                     .view-foot .view-comm{
                         background: url(/static/circle/circledetail_content_icon_discuss@3x.png) no-repeat .03rem;
-                        background-size: 50%;
                         margin-right:.05rem;
+                        background-size: .13rem;
                     }
                     .view-bottom{
                         width:100%;
@@ -646,65 +661,42 @@ class Foot extends React.Component{
         });
     }
     render(){
-        return(<div className="foot">
-            <span className="comment" onClick={this.handleCom}><em><img src="/static/future/futures_btn_opinion@3x.png" />发表观点</em></span>
-            <span className="chooice" onClick={this.state.optional?this.optional:this.setOptional}><em>{this.state.optional?'取消自选':'+自选'}</em></span>
+         return(<div className="foot">
+            <span className="chooice" onClick={this.state.optional?this.optional:this.setOptional}>{this.state.optional?'取消自选':'+自选'}</span>
+            <span className="comment" onClick={this.handleCom}>发表观点</span>
             <Alert type={this.state.confirm.type} confirm={this.state.confirm} isNot={this.isOk} isOk={this.state.confirm.type==1?this.isOk:this.setOptional}/>
             <style>{`
                 .foot{
-                    height:.45rem;
+                    height:.49rem;
                     width:100%;
-                    background:#cd4a47;
+                    background:#fff;
                     display:flex;
                     display:-webkit-flex;
                     position:fixed;
                     left:0;
                     bottom:0;
                     z-index:101;
+                   
                 }
                 .foot span{
-                    color:#fff;
-                    line-height:.38rem;
+                    color:#cd4a47;
+                    line-height:.49rem;
                     text-align:center;
-                    font-size:.14rem;‘
+                    font-size:.15rem;‘
                     display:block;
                     position:relative;
-                    height:.38rem;
-                    margin-top:.03rem;
-                }
-                .foot span em{
-                    height:.16rem;
-                    font-size:.14rem;
-                    margin:0 auto;
-                    padding-left:.2rem;
-                }
-
-                .comment{
-
-                    flex:2;
-                    -webkit-flex:2;
-                    position:relative;
-                }
-                .chooice{
-                    border-left:0.01rem solid #fff;
-                }
-                .chooice,.trade{
-                    
-                    flex:1;
+                    height:.49rem;
+                     flex:1;
                     -webkit-flex:1;
                 }
-                .comment em img{
-                    display:inline-block;
-                    width:.25rem;
-                    vertical-align:middle;
-                } 
-                .foot .chooice em{
-                    color:#fff;
-                    font-size:.14rem;
-                    padding-left:0;
+                .foot span.chooice{
+                    line-height:.48rem;
+                    height:.48rem;
+                    border-top:0.01rem solid #ddd;
                 }
-                .trade em{
-                    background:url(/static/future/futures_btn_trade@3x.png) left center no-repeat;
+                .foot span.comment{
+                    background:#cd4a47;
+                   color:#fff;
                     
                 }
             `}</style>
@@ -739,12 +731,12 @@ class Quota extends React.Component{
         if(_this.quota){
             $.ajax({
                 type:'get',
-                url:'/stock/realtime',
-                data:{stock_code:_this.props.data.varietyType},
+                url:'/stk/stk/real.do',
+                data:{code:_this.props.data.varietyType},
                 dataType:'JSON',
                 success:function(e){
                     _this.setState({
-                        data:e.result[0].data[0]
+                        data:e.data
                     })
                 }
             })
@@ -787,14 +779,14 @@ class Quota extends React.Component{
         _this.serverRequest=$.ajax({
             type:'get',
             url:'/coterie/viewpoint/findViewpoint.do',
-            data:{page:_this.state.viewPage,pageSize:10,varietyId:_this.props.data.varietyId},
+            data:{page:_this.state.viewPage,pageSize:15,varietyId:_this.props.data.varietyId},
             dataType:'JSON',
             success:function(e){
                 if(e.code==200&&e.data.length){
                     _this.setState({
                         viewData:_this.state.viewData.concat(e.data),
                         viewPage:_this.state.viewPage+1,
-                        viewMore:e.resultCount>(_this.state.viewPage+1)*10?true:false
+                        viewMore:e.resultCount>(_this.state.viewPage+1)*15?true:false
                     })
                 }
             }
@@ -806,26 +798,25 @@ class Quota extends React.Component{
             s = {
                 marginTop:t+'rem'
             };
-
+		var marketPoint = this.props.marketPoint ? this.props.marketPoint : 2;
         return <div className="content" style={s}>
-            <div className={d?d.rise_pre>0?'mdata thigh':'mdata tlow':'mdata'}>
-                <span className="nomarket">{this.props.data.exchangeStatus?'':'休市'}</span>
-                <div className='tleft'>
-                    <span>{d?d.last_price:''}</span>
-                    <em>{d?d.rise_price>0?'+'+d.rise_price:d.rise_price:''}   {d?d.rise_pre>0?'+'+d.rise_pre+'%':d.rise_pre+'%':''}</em>
+            <div className={d?d.upDropPrice>=0?'mdata thigh':'mdata tlow':'mdata'}>
+                <div className={d?d.upDropPrice>=0?'tleft thigh':'tleft tlow':'tleft'}>
+                    <span>{d?d.lastPrice:''}</span>
+                    <em>{d?d.upDropPrice>=0?'+'+d.upDropPrice.toFixed(2):d.upDropPrice.toFixed(2):''}   {d?d.upDropPrice>=0?'+'+(d.upDropSpeed*100).toFixed(2)+'%':(d.upDropSpeed*100).toFixed(2)+'%':''}</em>
                 </div>
                 <div className='tright'>
                     <div>
                         <em>最高</em>
-                        <span>{this.state.data?this.state.data.high_price:'--'}</span>
+                        <span>{this.state.data?this.state.data.highestPrice.toFixed(marketPoint):'--'}</span>
                         <em>最低</em>
-                        <span>{this.state.data?this.state.data.last_price:'--'}</span>
+                        <span>{this.state.data?this.state.data.lowestPrice.toFixed(marketPoint):'--'}</span>
                     </div>
                     <div>
                         <em>今开</em>
-                        <span>{this.state.data?this.state.data.open_price:'--'}</span>
+                        <span>{this.state.data?this.state.data.openPrice.toFixed(marketPoint):'--'}</span>
                         <em>昨收</em>
-                        <span>{this.state.data?this.state.data.prev_price:'--'}</span>
+                        <span>{this.state.data?this.state.data.preClsPrice.toFixed(marketPoint):'--'}</span>
                     </div>
                 </div>
             </div>
@@ -858,28 +849,16 @@ class Quota extends React.Component{
                 .quota_main em{
                     font-style:normal;
                 }
-                
                 .mdata{
-                    
-                    background:#0c0f16;
+                    background:#222;
                     display:flex;
                     display:-webkit-flex;
-                    padding:.2rem;
+                    padding:.1rem;
                     width:100%;
                     position:fixed;
                     z-index: 99;
                 }
-                .mdata .nomarket{
-                    display:block;
-                    position:absolute;
-                    top: -.17rem;
-                    left: 50%;
-                    margin-left: -.12rem;
-                    color: #fff;
-                    font-size:.12rem;
-
-                }
-                .mdata div{
+                .mdata div.tleft,.mdata div.tright{
                     flex:1;
                     -webkit-flex:1;
                 }
@@ -887,74 +866,67 @@ class Quota extends React.Component{
                 .mdata .tleft span{
                     font-size:.38rem;
                     display:block;
-                    color:#fff;
+                    color:#82848a;
+                    line-height: .45rem;
                 } 
-                .thigh{
-                    background:#cd4a47;
+                .mdata .thigh span,.mdata .thigh em{
+                    color:#cd4a47;
                 }
-                .tlow{
-                    background:#33d37e;
+                .mdata .tlow span,.mdata .tlow em{
+                    color:#33d37e;
                 }
                 .mdata .tleft em{
                     font-size:.14rem;
                     display:block;
-                    color:#fff;
                 }
                 .chart-content{
-                    padding-top:1rem;
+                    padding:0 .1rem;
+                    padding-top:.9rem;
+                    background:#fff;
                 }
-                 .tright div{
-                    width:.7rem;
+               
+                .tright div{
+                    min-width:.5rem;
                     padding-left:.12rem;
                     float:right;
                 }
                 
                 .tright div em{
                     font-size:.1rem;
-                    color:rgba(255, 255, 255, 0.4);
+                    color:#999;
                     display:block;
                 }
-                .tright div span{
+                
+                .tright div {
                     font-size:.12rem;
-                    color:#fff;
+                    color:#999;
                     display:block;
                 }
-                .tright div:last-child{
-                    border-right:.01rem solid  rgba(255, 255, 255, 0.4);
-                } 
-               
+                .tright div span.first{
+                    display:block;
+                    padding-bottom:.03rem;
+                }
                 .chart-title{
                     width:100%;
                     display:flex;
                     display:-webkit-flex;
-                    height:.4rem;
+                    height:.36rem;
                     border-bottom:.005rem solid #e7e7e8;
                 }
                 .chart-title li{
                     flex:1;
                     -webkit-flex:1;
                     font-size:.12rem;
-                    line-height:.4rem;
-                    color:#0c0f16;
+                    line-height:.36rem;
+                    color:#666;
                     text-align:center;
                     position:relative;
                     background:#fff;
                 }
                 .chart-title li.on{
-                    color:#869bcb;
+                    color:#cd4a47;
 
                 }
-                .chart-title li.on:after{
-                    content:'';
-                    width:.5rem;
-                    height:.01rem;
-                    border-bottom:.01rem solid #869bcb;
-                    position:absolute;
-                    bottom:0rem;
-                    left:50%;
-                    margin-left:-.25rem;
-                 }
-                
                  
             `}</style>
         </div>
@@ -981,7 +953,8 @@ export default  class  Stock extends React.Component {
                 if(e.code==200&&e.data){
                      _this.setState({
                         vId:e.data.varietyId,
-                        future:e.data
+                        future:e.data,
+						marketPoint:e.data.marketPoint
                     });
                 }
             }
@@ -992,9 +965,9 @@ export default  class  Stock extends React.Component {
         if(this.state.vId){
             return  <div className='quota_main'  ref="main" id="main">
                 <Header_title text='指数行情'/>
-                <Head text={this.state.future.varietyName+'('+this.state.future.varietyType+')'}/>
+                <Head text={this.state.future.varietyName+'('+this.state.future.varietyType+')'} little={this.state.future.exchangeStatus==1?'交易中':'休市'}/>
                  
-                <Quota data={this.state.future}/>
+                <Quota data={this.state.future} marketPoint={this.state.marketPoint} />
                 
                 <style>{`
                     #head{position:fixed;z-index:99;top:0;left:0;}

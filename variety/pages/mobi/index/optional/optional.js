@@ -3,6 +3,7 @@ import $ from 'jquery'
 import Router from 'next/router';
 import Header_title from '../../common/header/header_title.js'
 import Head from '../../common/header/header_left.js'
+import Type from '../../common/type.js'
 import Text_none from '../../common/text_none.js';
 import Confirm from '../../common/confirm.js';
 
@@ -110,7 +111,7 @@ class Flist extends React.Component {
             return (
             <div className="main">
             	<ul className='top'>
-                    <li>名称</li>
+                    <li className="name">名称</li>
                     <li>最新价格</li>
                     <li>涨跌幅</li>
                 </ul>
@@ -118,21 +119,29 @@ class Flist extends React.Component {
 				{
 
 					this.props.data.map((e,i) => {
-						var lastPrice='',upDropSpeed='',myClass='',myCode='',myNext='',myNextId='',gpId='';
+						var lastPrice='',upDropSpeed='',myClass='',myCode='',myNext='',myNextId='',gpId='',_type;
 						if(e.bigVarietyTypeCode=='stock'){//股票
+                            _type = '股票';
 							myCode = e.varietyType;
 							
-							lastPrice = jsonCode1[e.varietyType] ? jsonCode1[e.varietyType].last_price : '--';
+							lastPrice = jsonCode1[e.varietyType] ? jsonCode1[e.varietyType].lastPrice.toFixed(e.marketPoint) : '--';
 
-							upDropSpeed = jsonCode1[e.varietyType] ? ( (jsonCode1[e.varietyType].rise_pre-0).toFixed(2)<0 ? (jsonCode1[e.varietyType].rise_pre-0).toFixed(2) : '+'+(jsonCode1[e.varietyType].rise_pre-0).toFixed(2) )+"%":'--';
+							upDropSpeed = jsonCode1[e.varietyType] ? ( (jsonCode1[e.varietyType].upDropSpeed*100).toFixed(2)<0 ? (jsonCode1[e.varietyType].upDropSpeed*100).toFixed(2) : '+'+(jsonCode1[e.varietyType].upDropSpeed*100).toFixed(2) )+"%":'--';
 
 							myClass = jsonCode1[e.varietyType] ?jsonCode1[e.varietyType].myClass : '';
+							
+							
+							if(jsonCode1[e.varietyType].status == 0){
+								myClass = 'istp_class';
+								upDropSpeed = '停牌'
+							}
 							
 							myNext = 1;
 							myNextId = e.varietyType;
 							gpId = e.varietyId;
 						}
 						else if( e.bigVarietyTypeCode=='future' ){//期货
+                             _type = '期货';
 							myCode = e.contractsCode;
 							
 							lastPrice = jsonCode[e.contractsCode] ? (jsonCode[e.contractsCode].lastPrice).toFixed(e.marketPoint):'--';
@@ -150,9 +159,9 @@ class Flist extends React.Component {
 						
 						return(
 							<div key={i}  ref={i} className='list' onTouchStart={this.handleTouchStart} onTouchMove={this.handleTouchMove} onTouchEnd={()=>this.handleTouchEnd(i)} onClick={()=>this.handClick(myNext,myNextId,i,gpId)}>
-								<span className='pz_bt'>{e.varietyName}<em>{myCode}</em></span>
+								<span className='pz_bt'>{e.varietyName}<em>{_type} {myCode}</em></span>
 								<span className={ myClass +' price'}>{lastPrice}</span>
-								<span className={ myClass +' percent'}>{upDropSpeed}</span>
+								<span className='percent'><b className={myClass}>{upDropSpeed}</b></span>
 								<div className='list_remove' onClick={()=>this.removeClick( e.varietyId)}>删除</div>
 						   </div>
 						)
@@ -163,7 +172,14 @@ class Flist extends React.Component {
 
 			</div>)
 		}else{
-			return <Text_none text="暂无自选"/>
+			return <div className="main">
+                <ul className='top'>
+                    <li className="name">名称</li>
+                    <li>最新价格</li>
+                    <li>涨跌幅</li>
+                </ul>
+                <Text_none text="暂无自选股票/期货"/>
+            </div>
 		}
         
     }
@@ -179,11 +195,13 @@ export default  class  Future extends React.Component {
 			confirm:{
                 show:false,
                 type:1,
-                content:''
-            }
+                content:''            
+            },
+            opType:0
         }
 		this.ready = this.ready.bind(this);
 		this.nextChange = this.nextChange.bind(this);
+        this.hanleType = this.hanleType.bind(this);
     }
     componentDidMount(){
 		this.ready()
@@ -238,7 +256,7 @@ export default  class  Future extends React.Component {
 					if(d.code==200){
 						for(var i=0;i<d.data.length;i++){
 							jsonCode[d.data[i].instrumentId] = d.data[i];
-							jsonCode[d.data[i].instrumentId].upDropPrice > 0 ? jsonCode[d.data[i].instrumentId].myClass = 'color_red' : jsonCode[d.data[i].instrumentId].myClass = 'color_green';
+							jsonCode[d.data[i].instrumentId].upDropPrice >= 0 ? jsonCode[d.data[i].instrumentId].myClass = 'thigh' : jsonCode[d.data[i].instrumentId].myClass = 'tlow';
 						}
 						_this.setState({
 							dataHq : jsonCode
@@ -248,16 +266,16 @@ export default  class  Future extends React.Component {
 			});
 			$.ajax({
 				type:'get',
-				url:'/stock/comb',
-				data:{stock_code:Scode1},
+				url:'/stk/stk/list.do',
+				data:{codes:Scode1},
 				dataType:'json',
 				async:false,
 				success:function(d){
-					if(d.result[0].data.length>0){
-						var mydata = d.result[0].data;
+					if(d.data.length>0){
+						var mydata = d.data;
 						for(var i=0;i<mydata.length;i++){
-							jsonCode1[mydata[i].stock_code] = mydata[i];
-							jsonCode1[mydata[i].stock_code].rise_price > 0 ? jsonCode1[mydata[i].stock_code].myClass = 'color_red' : jsonCode1[mydata[i].stock_code].myClass = 'color_green';
+							jsonCode1[mydata[i].instrumentId] = mydata[i];
+							jsonCode1[mydata[i].instrumentId].upDropSpeed >= 0 ? jsonCode1[mydata[i].instrumentId].myClass = 'thigh' : jsonCode1[mydata[i].instrumentId].myClass = 'tlow';
 						}
 						
 						_this.setState({
@@ -285,110 +303,110 @@ export default  class  Future extends React.Component {
 			
 		}
 	}
+    hanleType(){
+        this.setState({
+            opType:!this.state.opType
+        })
+    }
     render (){
         return <div>
            
             <Header_title text='乐米自选'/>
             <Head text="自选" />
-            
             <Flist data={this.state.data} dataHq={this.state.dataHq}  dataHq1={this.state.dataHq1} isChang={this.nextChange}/>
-            
+            <foot onClick={this.hanleType}>添加自选</foot>
             <Confirm confirm={this.state.confirm} />
-
+            <Type show={this.state.opType} callback={this.hanleType} type={0}/>
             <style>{`
 				body{
-					background: #efefef;
 					overflow-x: hidden;
 				}
-                 nav{
-                    width:100%;
-                    display:flex;
-                    display:-weblit-flex;
-                    background:#fff;
-                }
-                nav div{
-                    flex:1;
-                    -webkit-flex:1;
-                    text-align:center;
-                }
-                nav  span{
-                    line-height:.5rem;
-                    color:#0c0f16;
-                    font-size:.16rem;
-                    display:block;
-                    position:relative;
-                }
-                 nav span.on{
-                    color:#869bcb;
-                }
-                 nav span.on:after{
-                    content:'';
-                    border-bottom:.02rem solid #869bcb;
-                    width:.5rem;
-                    position:absolute;
-                    left:50%;
-                    top:.48rem;
-                    margin-left:-.25rem;
-                }
-                div.con{
-                    display:none;
-                }
-                div.active{
-                    display:block;
-                }
                 ul.top{
                     width:100%;
                     display:flex;
-                    background:#fff;
-                    border-bottom:.01rem solid #f0efef;
+                    background:#f5f5f5;
+                    border-bottom:.01rem solid #ddd;
+                    padding:0 .1rem;
                 }
                 ul.top li{
                     flex:1;
                     text-align:left;
-                    padding-left:.12rem;
-                    font-size:.14rem;
-                    color:#82848a;
-                    line-height:.36rem;
+                    font-size:.1rem;
+                    color:#999;
+                    line-height:.32rem;
                 }
-                 div.main{
-                    background:#fff;
+                ul.top li.name{
+                    flex:2;
+                }
+                ul.top li:last-child{
+                    text-align:right;
+                }
+                div.mian{
+                    padding-bottom:.5rem;
                 }
                 div.list{
                     width:100%;
                     display:flex;
                     display:-webkit-flex; 
-                    padding:.1rem 0; 
-                    border-bottom:.01rem solid #f0efef; 
+                    padding:.1rem; 
+                    border-bottom:.01rem solid #ddd; 
 					position: relative;
+                    background:#fff;
                 }
                 div.list span{
                     flex:1;
                     -webkit-flex:1;
                     display:block;
-                    padding-left:.1rem;
-                    font-size:.16rem;
-					color: #838489;
+                    font-size:.15rem;
                 }
 				div.list span.pz_bt{
 					color: #0c0f16;
 				}
-				div.list span.color_red{
-					color: #cd4a47;
-				}
-				div.list span.color_green{
-					color: #33d37e;
-				}
+				
+                
+                 div.list span:first-child{
+                    flex:2;
+                    -webkit-flex:2;
+                    color:#222;
+                    font-size:.15rem;
+                }
                 div.list span em{
                     display:block;
-                    font-size:.12rem;
+                    font-size:.1rem;
                     font-style:normal;
-					color: #838489;
+                    color:#999;
                 }
                 span.price,span.percent{
                     line-height:.32rem;
-                    color:#cd4a47;
-                    font-size:.16rem;
+                    color:#838489;
+                    font-size:.17rem;
                 }
+                span.thigh{
+                    color:#cd4a47;
+                }
+               span.tlow{
+                    color:#2ecc9f;
+               }
+               div.list span b{
+                    width:.7rem;
+                    height:.27rem;
+                    display:block;
+                    color:#fff;
+                    text-align:center;
+                    line-height:.27rem;
+                    font-size:.15rem;
+                    float: right;
+                    font-weight: normal;
+               }
+               div.list span b.thigh{
+                background:#cd4a47;
+               }
+                div.list span b.tlow{
+                background:#2ecc9f;
+               }
+				div.list span b.istp_class{
+                background:#838489;
+               }
 				div.list_remove{
 					width: 0.7rem;
 					height: 100%;
@@ -402,8 +420,22 @@ export default  class  Future extends React.Component {
 				}
 				.main_ovx{
 					width: 100%;
-					overflow: hidden;
+					overflow-x: hidden;
+                    padding-bottom:.5rem;
 				}
+                foot{
+                    position:fixed;
+                    bottom:0;
+                    left:0;
+                    width:100%;
+                    height:.49rem;
+                    border-top:.01rem solid #ddd;
+                    background:#fff;
+                    color:#cd4a47;
+                    line-height:.49rem;
+                    text-align:center;
+                    font-size:.15rem;
+                }
             `}</style>
           </div>
         

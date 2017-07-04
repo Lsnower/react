@@ -67,8 +67,9 @@ export default class Clickage extends Component {
         that.props.model();
         userage = new Date().getFullYear() - id;
         $.ajax({
-            url:'/user/user/updateUserAge.do',
-            data:{userAge:userage},
+            url:'/user/user/updateUser.do',
+            data:{age:userage},
+            type:'post',
             success:function(d){
                 if(d.code == 200){
                     

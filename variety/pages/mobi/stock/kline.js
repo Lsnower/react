@@ -185,7 +185,6 @@ export default  class  Sline extends React.Component {
                 b = chart.dates(),
                 s = function (i,f) {
                     var k=[];
-
                     for(var x=0;x<i.length;x++){
                         switch(x){
                             case 3:
@@ -205,19 +204,19 @@ export default  class  Sline extends React.Component {
                             break;
                         }
                     }
-                    var ktime = k.join();
+                    var ktime = k.join('');
                     var str = f||'M-D';
                     return b.format(ktime,str);
                 },
-                a = "#e7e7e8",
-                r = "#e7e7e8",
-                n = "#b3b3b3",
-                c = "#cd4a47",
-                o = "#33d37e",
-                l = "#cd4a47",
-                g = "#869bcb",
-                u = "#a63beb",
-                d = "#d7ce51",
+                a = "#ddd",
+                r = "#ddd",
+                n = "#999",
+                c = "#ef6d6a",
+                o = "#2ecc9f",
+                l = "#ef6d6a",
+                g = "#6a96ef",
+                u = "#dc6aef",
+                d = "#efc86a",
                 x = "#0f4a96",
                 m = 10,
                 _ = .8,
@@ -240,7 +239,7 @@ export default  class  Sline extends React.Component {
                         this.price = 0,
                         this.moments = [],
                             
-                        this.svgWidth = document.body.clientWidth//t.getSize(this.svg).width,
+                        this.svgWidth = document.body.clientWidth-20//t.getSize(this.svg).width,
                         this.svgHeight = t.getSize(this.svg).height,
                         this.gPricesEl = t.childs(this.svg)[1],
                         this.gVolumesEl = t.childs(this.svg)[2],
@@ -258,6 +257,7 @@ export default  class  Sline extends React.Component {
                         this.beginPrice = 0,
                         this.endPrice = 0,
                         this._cacheEl = [];
+                        this._crossEl = [];
                         var h = 20;
                         this.priceChartBox = {
                            x: {
@@ -304,8 +304,7 @@ export default  class  Sline extends React.Component {
                                 return str.length<=2?"0:"+str:(v2+":"+v);
                             },
                             k = function(v) {
-                                var u=[];
-                                var f = [];
+
                                 var Acolor = { 0:'#fc603c',1:'#25d79e'};
                                 var grayC = '#a8a8a8';
                                 var whiteC = '#FFF';
@@ -313,20 +312,16 @@ export default  class  Sline extends React.Component {
                                 var strMa5 = '';
                                 var strMa10 = '';
                                 var strMa20 = '';
-                                var a = o.gPricesEl,
-                                h = o.gBlockEl,
+                                var a = o.gBlockEl,
                                 c = o.priceChartBox.x.end,
                                 b = o.priceChartBox.y.height,
                                 len = 40,
                                 _clear = function() {
-                                    $.each(u,
+                                    $.each(o._crossEl,
                                     function (n,t) {
                                         t && a.removeChild(t)
-                                    }),u.length = 0;
-                                    $.each(f,
-                                    function (n,t) {
-                                        t && h.removeChild(t)
-                                    }),f.length = 0;
+                                    }),o._crossEl.length = 0;
+                                    
                                 },
                                 _draw = function(el,end) {
                                     var t = el.changedTouches[0],
@@ -385,14 +380,11 @@ export default  class  Sline extends React.Component {
                                     o.gPricesEl.children[(o.gPricesEl.children.length-2)].innerHTML  = '<tspan>MA10:'+ma10_num+'</tspan>';
                                     o.gPricesEl.children[(o.gPricesEl.children.length-1)].innerHTML = '<tspan>MA20:'+ma20_num+'</tspan>';
                                     /*end*/
-                                    
-                                    u.push(o._line(a, 0, _y, c, _y, '#cd4a47'));
-                                    u.push(o._line(a, t.pageX, 0, t.pageX, b, '#cd4a47'));
-                                    
+                                                           
                                     
                                     if( t.pageX < (c/2) ){
-                                        var maxc = $(window).width();
-                                        paint(maxc-80,maxc-5,'end');
+                                        var maxc = o.priceChartBox.x.end;
+                                        paint(maxc-80,maxc-3,'end');
                                     }
                                     else{
                                         paint(0,5,'start');
@@ -402,25 +394,21 @@ export default  class  Sline extends React.Component {
                                     function paint(hx,x,w){
                                         var fs = w + '; font-size:0.12rem;';
                                         var fs1 = w + '; font-size:0.14rem;';
-                                        f.push(o._rect(a,hx,2,80,220,'#0e2947','none'));
-                                        f.push(o._text(a,x,14,sTime,grayC,w,'none'));
-                                        f.push(o._text(a,x,30,'开盘',whiteC,fs,'none'));
-                                        f.push(o._text(a,x,45,_data.open.toFixed(smallN),kcolor,fs1,'none'));
-                                        f.push(o._text(a,x,65,'最高',whiteC,fs,'none'));
-                                        f.push(o._text(a,x,85,_data.high.toFixed(smallN),Hcolor,fs1,'none'));
-                                        f.push(o._text(a,x,105,'最低',whiteC,fs,'none'));
-                                        f.push(o._text(a,x,125,_data.low.toFixed(smallN),Lcolor,fs1,'none'));
-                                        f.push(o._text(a,x,145,'收盘',whiteC,fs,'none'));
-                                        f.push(o._text(a,x,162,_data.close.toFixed(smallN),Ccolor,fs1,'none'));
-                                        f.push(o._text(a,x,180,'交易量',whiteC,fs,'none'));
-                                        f.push(o._text(a,x,195,_data.volume,Ccolor,fs1,'none'));
-                                    }
-                                    
-                                    $.each(f,
-                                    function (n,t) {
-                                        t && h.appendChild(t)
-                                    });
-                                    
+                                        o._crossEl.push(o._line(a, 0, _y, c, _y, '#222'));
+                                        o._crossEl.push(o._line(a, t.pageX, 0, t.pageX, b, '#222'));
+                                        o._crossEl.push(o._rect(a,hx,2,80,220,'#0e2947'));
+                                        o._crossEl.push(o._text(a,x,14,sTime,grayC,w));
+                                        o._crossEl.push(o._text(a,x,30,'开盘',whiteC,fs));
+                                        o._crossEl.push(o._text(a,x,45,_data.open.toFixed(smallN),kcolor,fs1));
+                                        o._crossEl.push(o._text(a,x,65,'最高',whiteC,fs));
+                                        o._crossEl.push(o._text(a,x,85,_data.high.toFixed(smallN),Hcolor,fs1));
+                                        o._crossEl.push(o._text(a,x,105,'最低',whiteC,fs));
+                                        o._crossEl.push(o._text(a,x,125,_data.low.toFixed(smallN),Lcolor,fs1));
+                                        o._crossEl.push(o._text(a,x,145,'收盘',whiteC,fs));
+                                        o._crossEl.push(o._text(a,x,162,_data.close.toFixed(smallN),Ccolor,fs1));
+                                        o._crossEl.push(o._text(a,x,180,'交易量',whiteC,fs));
+                                        o._crossEl.push(o._text(a,x,195,_data.volume,Ccolor,fs1));
+                                    } 
                                 };
                                 v.addEventListener('touchstart',
                                 function(el) {
@@ -451,8 +439,6 @@ export default  class  Sline extends React.Component {
                     },
                     _drawFramework: function () {
                         this._line(this.gPricesEl, this.priceChartBox.x.begin, this.priceChartBox.y.end, this.priceChartBox.x.end, this.priceChartBox.y.end, a),
-                        this._line(this.gVolumesEl, this.volumeChartBox.x.begin, this.volumeChartBox.y.begin, this.volumeChartBox.x.end, this.volumeChartBox.y.begin, a),
-                        this._line(this.gVolumesEl, this.volumeChartBox.x.begin, this.volumeChartBox.y.begin + this.volumeChartBox.y.height / 2, this.volumeChartBox.x.end, this.volumeChartBox.y.begin + this.volumeChartBox.y.height / 2),
                         this._line(this.gVolumesEl, this.volumeChartBox.x.begin, this.volumeChartBox.y.end - .5, this.volumeChartBox.x.end, this.volumeChartBox.y.end - .5)
                     },
                     _drawBasePriceLine: function () {
@@ -481,7 +467,12 @@ export default  class  Sline extends React.Component {
                         function (f,i) {
                             i && t.remove(i)
                         }),
-                        this._cacheEl.length = 0
+                        this._cacheEl.length = 0;
+                        i.each(this._crossEl,
+                        function (f,i) {
+                            i && t.remove(i)
+                        }),
+                        this._crossEl.length = 0;
                     },
                     _drawPriceRange: function () {
                         var i = this.maxPrice,
@@ -516,9 +507,7 @@ export default  class  Sline extends React.Component {
                         n = this.volumeChartBox.y,
                         x = r.end - 3,
                         m = n.begin + (n.height / 2 - 10),
-                        e = h.shrink(this.maxVolume),
-                        s.push(this._text(a, x, m, e, "", "end"))
-
+                        e = h.shrink(this.maxVolume);
                     },
                     _drawTimeline: function (i) {
                         var t = this.data.slice(this.data.length - this.days),

@@ -224,9 +224,11 @@ class Acclist extends Component {
                         let t = v.other == '0' ? <a id={p} href="javascript:;;" onClick={()=>{that.nohandler(v.userId,v.userName)}}>{h}</a> : <a id={p} href="javascript:;;" onClick={()=>{that.handler(v.userId,v.userName)}}>{h}</a>;
                         fansimg = v.userPortrait ? v.userPortrait+'?x-oss-process=image/resize,m_fill,h_200,w_200' : "../../../static/mine/headportrait160x160@3x.png";
                         return (
-                            <li key={r} className="clear">
-                                <img src={fansimg} onClick={()=>{that.clickimg(v.userId)}}/>
-                                <div className="listcon">{v.userName}</div>
+                            <li key={r} className="clear list_li">
+								<div className="list_li_l" onClick={()=>{that.clickimg(v.userId)}}>
+                                	<img src={fansimg}/>
+                                	<div className="listcon">{v.userName}</div>
+                                </div>
                                 {t}
                                 <style jsx global>{`
                                    a#guanzhu{

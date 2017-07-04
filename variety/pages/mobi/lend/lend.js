@@ -50,7 +50,7 @@ class Lend extends React.Component{
     }
     toLoadView(){
         var t =this;
-        var H = $('.finance').height() ? $('.finance').height() : ($(window).height()-50) ;
+        var H = $('.maxhei').height() ? $('.maxhei').height() : ($(window).height()-50) ;
         t.serverRequest=$.ajax({
             type:'get',
             url:'/coterie/help/loan/showList.do',
@@ -69,17 +69,17 @@ class Lend extends React.Component{
         })
     }
     render(){
+        
         if(this.state.viewData.length){
+            
             return (
-                <div>
-                    <Header_title text="借款有道"/>
-                    <Header text="借款有道"/>
+                <div className="maxhei">
                     <InfiniteScroll  next={this.toLoadView} height={this.state.bigHeight} hasMore={this.state.viewMore} loader={ <p className="view-bottom">加载更多</p>} endMessage={<p className="view-bottom">已加载全部</p>}>
                     {
                         this.state.viewData.map((e,i)=>{
                             return(
                                 <section className="finance" key={i}>
-                                    <LendUserInfo user={e} isLogin={this.state.isLogin} query={''}/>
+                                    <LendUserInfo user={e} isLogin={this.state.isLogin}/>
                                     <Lend_con info={e}/>
                                 </section>
                                 )
@@ -98,7 +98,7 @@ class Lend extends React.Component{
                             padding: .1rem .13rem;
                             margin-top: .1rem;
                             background: #fff;
-                        }
+						}
                         
                     `}</style>
                 </div>
@@ -106,9 +106,7 @@ class Lend extends React.Component{
         }else{
             return(
                 <div>
-                    <Header_title text="借款有道"/>
-                    <Header text="借款有道"/>
-                    <Text_none text=""/>
+                    <Text_none text="暂无借款"/>
                 </div>
             )
         }
